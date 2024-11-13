@@ -3,10 +3,11 @@
 #include "../Vector2/Vector2.h"
 #include <vector>
 #include "Weapons/Weapon.h"
+#include "../Nodes/Node.h"
 
 class Player : public PlayerAttackable, public PlayerDamageable {
 private:
-	Vector2 position;
+	Node* position;
 	int coinCounter;
 	int lifes;
 	int potionsCounter;

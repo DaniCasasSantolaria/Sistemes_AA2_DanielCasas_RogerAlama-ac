@@ -5,6 +5,7 @@ Player::~Player() {
 		delete weapon;
 
 	delete equipedWeapon;
+	delete position;
 }
 
 void Player::Attack(EnemyDamageable* enemy) {
