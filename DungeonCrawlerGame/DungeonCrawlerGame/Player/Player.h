@@ -14,8 +14,9 @@ private:
 	std::vector<Weapon*> weapons;
 	Weapon* equipedWeapon;
 public:
-	Player() = default;
+	Player();
 	~Player();
 	void Attack(EnemyDamageable* enemy) override;
+	void Update(float dt);
 	void ReceiveDamage(int damage) override;
 };

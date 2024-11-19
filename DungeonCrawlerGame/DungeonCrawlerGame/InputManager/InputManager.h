@@ -6,7 +6,7 @@
 #include <map>
 #include <list>
 
-#define Input InputManager::Instance()
+#define IS InputSystem::Instance()
 
 class InputSystem {
 public:
