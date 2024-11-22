@@ -157,6 +157,7 @@
     <ClInclude Include="Player\PlayerAttack.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Player\PlayerDamage.h" />
+    <ClInclude Include="Player\PlayerHealing.h" />
     <ClInclude Include="Player\Weapons\Spear.h" />
     <ClInclude Include="Player\Weapons\Sword.h" />
     <ClInclude Include="Player\Weapons\Weapon.h" />

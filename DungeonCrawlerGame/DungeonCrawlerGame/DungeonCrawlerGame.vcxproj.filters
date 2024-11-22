@@ -110,6 +110,9 @@
     <ClInclude Include="Nodes\NodeMap.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="Player\PlayerHealing.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="NewFile.txt" />
