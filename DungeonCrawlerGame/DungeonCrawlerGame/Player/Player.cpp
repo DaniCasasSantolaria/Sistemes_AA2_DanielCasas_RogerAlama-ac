@@ -31,10 +31,11 @@ Player::Player() {
 		position->SetPosition(position->GetPosition() + Vector2(1, 0));
 		positionMutex.unlock();
 		});
-	InputSystem::KeyBinding* kb5 = IS.AddListener(K_E, [this]() {
-		lifeMutex.lock();
-		
-		lifeMutex.unlock();
+	InputSystem::KeyBinding* kb5 = IS.AddListener(K_1, [this]() {
+		if(potionsCounter > 0) {
+			Heal(10);
+			potionsCounter--;
+		}
 		});
 }
 
@@ -54,27 +55,12 @@ void Player::ActivatePlayer() {
 	IS.StartListen();
 }
 
-//void Player::Move(int key, float dt)
-//{
-//	if (lastTimeMoved < dt - cooldown) {
-//		lastTimeMoved = dt;
-//		switch (key) {
-//		case K_RIGHT:
-//			break;
-//		case K_LEFT:
-//			break;
-//		case K_UP:
-//			break;
-//		case K_DOWN:
-//			break;
-//		}
-//	}
-//}
-
 void Player::Update(float dt) {
-	
-	std::thread* movement = new std::thread(ActivatePlayer);
-	movement->detach();
+	if (lastTimeMoved < dt - cooldown) {
+		lastTimeMoved = dt;
+		std::thread* movement = new std::thread(ActivatePlayer);
+		movement->detach();
+	}
 }
 
 void Player::ReceiveDamage(int damage) {

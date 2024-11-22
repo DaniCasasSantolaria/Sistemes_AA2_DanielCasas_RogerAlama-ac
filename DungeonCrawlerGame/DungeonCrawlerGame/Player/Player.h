@@ -30,7 +30,6 @@ public:
 	void Attack(EnemyDamageable* enemy) override;
 	inline void ActivatePlayer(){IS.StartListen();}
 	inline void DesactivatePlayer() {IS.StopListen();}
-	void Move(int key, float dt);
 	void Update(float dt);
 	void ReceiveDamage(int damage) override;
 	void Heal(int lifeToHeal) override;
