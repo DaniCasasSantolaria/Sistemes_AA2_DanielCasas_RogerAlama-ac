@@ -1,7 +1,13 @@
 #pragma once
 #include "../Vector2/Vector2.h"
 
+enum class NodeContent { WALL, ENEMY, OBJECT, NOTHING, PLAYER, INVALID};
+
 class INodeContent {
+private:
+	char _content;
 public:
-	virtual void Draw(Vector2 offset) = 0;
+	INodeContent(NodeContent content);
+	void SetContent(NodeContent content);
+	void Draw(Vector2 offset);
 };

@@ -9,7 +9,9 @@ private:
 	INodeContent* _content = nullptr;
 	std::mutex _classMutex;
 public:
-	Node(Vector2 position);
+	/*Node(Vector2 position)
+		: _position(position) {}*/
+	Node(Vector2 position, INodeContent* content);
 
 	INodeContent* GetContent();
 	template<typename T, typename = typename std::enable_if<std::is_base_of<INodeContent, T>::value>::type>
@@ -17,7 +19,7 @@ public:
 		T* contentCasted = dynamic_cast<T*>(_content);
 		return contentCasted;
 	}
-	void SetContent(INodeContent* newContent);
+	void SetContent(NodeContent newContent);
 	void DrawContent(Vector2 offset);
 
 	//Crear dues funcions noves.

@@ -7,7 +7,7 @@ class GameManager {
 private:
 	Player* player;
 	std::vector<Enemy*> enemies;
-	NodeMap* map;
+	std::vector<NodeMap*> maps;
 public:
 	GameManager();
 	void Start();

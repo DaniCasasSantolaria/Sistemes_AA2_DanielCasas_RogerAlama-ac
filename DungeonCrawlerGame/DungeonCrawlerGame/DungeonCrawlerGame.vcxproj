@@ -134,6 +134,7 @@
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="InputManager\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Nodes\INodeContent.cpp" />
     <ClCompile Include="Nodes\Node.cpp" />
     <ClCompile Include="Nodes\NodeMap.cpp" />
     <ClCompile Include="Player\Player.cpp" />

@@ -24,7 +24,7 @@ private:
 
 	std::mutex _safeMultiNodeLockMutex;
 
-	Node* UnSafeGetNode(Vector2 position);
+	Node* GetNode(Vector2 position);
 public:
 	NodeMap(Vector2 size, Vector2 offset);
 

@@ -3,7 +3,7 @@
 
 
 Player::Player() {
-	position = new Node(Vector2(3,3));
+	position = new Node(Vector2(3, 3), new INodeContent(NodeContent::PLAYER));
 	coinCounter = 0;
 	lifes = 0;
 	potionsCounter = 0;
@@ -31,7 +31,7 @@ Player::Player() {
 		position->SetPosition(position->GetPosition() + Vector2(1, 0));
 		positionMutex.unlock();
 		});
-	InputSystem::KeyBinding* kb5 = IS.AddListener(K_E, [this]() {
+	InputSystem::KeyBinding* kb5 = IS.AddListener(K_1, [this]() {
 		lifeMutex.lock();
 		
 		lifeMutex.unlock();
@@ -48,10 +48,6 @@ Player::~Player() {
 
 void Player::Attack(EnemyDamageable* enemy) {
 	equipedWeapon->Attack();
-}
-
-void Player::ActivatePlayer() {
-	IS.StartListen();
 }
 
 //void Player::Move(int key, float dt)
@@ -73,8 +69,8 @@ void Player::ActivatePlayer() {
 
 void Player::Update(float dt) {
 	
-	std::thread* movement = new std::thread(ActivatePlayer);
-	movement->detach();
+	std::thread movement(&Player::ActivatePlayer, this);
+	movement.detach();
 }
 
 void Player::ReceiveDamage(int damage) {

@@ -1,10 +1,15 @@
 #include "NodeMap.h"
 
-Node* NodeMap::UnSafeGetNode(Vector2 position) {
+Node* NodeMap::GetNode(Vector2 position) {
+	_sizeMutex.lock();
 	if (position.x >= _size.x || position.y >= _size.y) {
+		_sizeMutex.unlock();
 		return nullptr;
 	}
+	_sizeMutex.unlock();
+	_gridMutex.lock();
 	NodeColumn* column = _grid[position.x];
+	_gridMutex.unlock();
 	Node* node = (*column)[position.y];
 	return node;
 }
@@ -13,16 +18,20 @@ NodeMap::NodeMap(Vector2 size, Vector2 offset) {
 	_size = size;
 	_offset = offset;
 
+	Vector2 randomNum1 = Vector2(rand() % 10, rand() % 10);
+	Vector2 randomNum2 = Vector2(rand() % 10, rand() % 10);
 	for (int x = 0; x < size.x; x++) {
 		NodeColumn* column = new NodeColumn();
 
 		for (int y = 0; y < size.y; y++) {
-			column->push_back(new Node(Vector2(x, y)));
+			if(x == 0 || y == 0 || x == size.x - 1 || y == size.y - 1)
+				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::WALL)));
+			else if((x == randomNum1.x && y == randomNum1.y) || (x == randomNum2.x && y == randomNum2.y))
+				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::WALL)));
 		}
 
 		_grid.push_back(column);
 	}
-
 }
 
 Vector2 NodeMap::GetSize() {
@@ -47,7 +56,7 @@ void NodeMap::Draw() {
 void NodeMap::SafePickNode(Vector2 position, SafePick safePickAction) {
 	_sizeMutex.lock();
 	_gridMutex.lock();
-	Node* node = UnSafeGetNode(position);
+	Node* node = GetNode(position);
 	_gridMutex.unlock();
 	_sizeMutex.unlock();
 
@@ -63,7 +72,7 @@ void NodeMap::SafeMultiPickNode(std::list<Vector2> positions, SafeMultiPick safe
 	_gridMutex.lock();
 
 	for (Vector2 pos : positions) {
-		nodes.push_back(UnSafeGetNode(pos));
+		nodes.push_back(GetNode(pos));
 	}
 
 	_gridMutex.unlock();

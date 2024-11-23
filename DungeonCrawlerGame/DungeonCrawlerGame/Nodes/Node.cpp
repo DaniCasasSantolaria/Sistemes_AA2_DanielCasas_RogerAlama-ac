@@ -1,7 +1,7 @@
 #include "Node.h"
 #include "../ConsoleControl/ConsoleControl.h"
 
-Node::Node(Vector2 position) {
+Node::Node(Vector2 position, INodeContent* content) {
 	_position = position;
 }
 
@@ -9,15 +9,15 @@ INodeContent* Node::GetContent() {
 	return _content;
 }
 
-void Node::SetContent(INodeContent* newContent) {
-	_content = newContent;
+void Node::SetContent(NodeContent newContent) {
+	_content->SetContent(newContent);
 }
 
 void Node::DrawContent(Vector2 offset) {
 	if (_content == nullptr) {
 		Vector2 pos = offset + _position;
 		CC::Lock();
-		CC::SetPosition(pos.x, pos.x);
+		CC::SetPosition(pos.x, pos.y);
 		std::cout << " ";
 		CC::Unlock();
 		return;
