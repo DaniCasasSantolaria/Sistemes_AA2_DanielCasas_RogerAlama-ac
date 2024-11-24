@@ -134,8 +134,11 @@
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="InputManager\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Nodes\INodeContent.cpp" />
     <ClCompile Include="Nodes\Node.cpp" />
     <ClCompile Include="Nodes\NodeMap.cpp" />
+    <ClCompile Include="Objects\Chest.cpp" />
+    <ClCompile Include="Objects\Object.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Player\Weapons\Spear.cpp" />
     <ClCompile Include="Player\Weapons\Sword.cpp" />
@@ -154,6 +157,8 @@
     <ClInclude Include="Nodes\INodeContent.h" />
     <ClInclude Include="Nodes\Node.h" />
     <ClInclude Include="Nodes\NodeMap.h" />
+    <ClInclude Include="Objects\Chest.h" />
+    <ClInclude Include="Objects\Object.h" />
     <ClInclude Include="Player\PlayerAttack.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Player\PlayerDamage.h" />
