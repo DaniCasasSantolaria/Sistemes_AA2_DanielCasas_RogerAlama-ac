@@ -1,4 +1,5 @@
 #include "NodeMap.h"
+#include <iostream>
 
 Node* NodeMap::GetNode(Vector2 position) {
 	_sizeMutex.lock();
@@ -18,16 +19,22 @@ NodeMap::NodeMap(Vector2 size, Vector2 offset) {
 	_size = size;
 	_offset = offset;
 
-	Vector2 randomNum1 = Vector2(rand() % 10, rand() % 10);
-	Vector2 randomNum2 = Vector2(rand() % 10, rand() % 10);
+	Vector2 randomNum1 = Vector2(rand() % ((8 - 1 + 1) + 1), rand() % ((8 - 1 + 1) + 1));
+	Vector2 randomNum2 = Vector2(rand() % ((8 - 1 + 1) + 1), rand() % ((8 - 1 + 1) + 1));
 	for (int x = 0; x < size.x; x++) {
 		NodeColumn* column = new NodeColumn();
 
 		for (int y = 0; y < size.y; y++) {
-			if(x == 0 || y == 0 || x == size.x - 1 || y == size.y - 1)
+			if (x == 0 || y == 0 || x == size.x - 1 || y == size.y - 1) {
+				if (x == size.x / 2 || y == size.y / 2)
+					column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::PORTAL)));
+				else
 				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::WALL)));
+			}
 			else if((x == randomNum1.x && y == randomNum1.y) || (x == randomNum2.x && y == randomNum2.y))
 				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::WALL)));
+			else
+				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::NOTHING)));
 		}
 
 		_grid.push_back(column);
@@ -49,6 +56,7 @@ void NodeMap::Draw() {
 			node->DrawContent(_offset);
 			node->Unlock();
 		}
+		std::cout << std::endl;
 	}
 	_gridMutex.unlock();
 }

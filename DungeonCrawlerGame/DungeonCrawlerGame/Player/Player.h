@@ -30,6 +30,8 @@ public:
 	void Attack(EnemyDamageable* enemy) override;
 	inline void ActivatePlayer(){IS.StartListen();}
 	inline void DesactivatePlayer() {IS.StopListen();}
+	void ReceiveMoreCoins(int amount);
+	inline void RecievePotion() { potionsCounter++; }
 	void Move(int key, float dt);
 	void Update(float dt);
 	void ReceiveDamage(int damage) override;

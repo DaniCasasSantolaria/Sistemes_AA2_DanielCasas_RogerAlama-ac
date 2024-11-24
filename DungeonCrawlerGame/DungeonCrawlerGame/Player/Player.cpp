@@ -32,9 +32,7 @@ Player::Player() {
 		positionMutex.unlock();
 		});
 	InputSystem::KeyBinding* kb5 = IS.AddListener(K_1, [this]() {
-		lifeMutex.lock();
-		
-		lifeMutex.unlock();
+		Heal(15);
 		});
 }
 
@@ -67,6 +65,12 @@ void Player::Attack(EnemyDamageable* enemy) {
 //	}
 //}
 
+void Player::ReceiveMoreCoins(int amount) {
+	coinsMutex.lock();
+	coinCounter += amount;
+	coinsMutex.unlock();
+}
+
 void Player::Update(float dt) {
 	
 	std::thread movement(&Player::ActivatePlayer, this);
@@ -81,6 +85,8 @@ void Player::ReceiveDamage(int damage) {
 
 void Player::Heal(int lifeToHeal)
 {
+	if (potionsCounter < 0)
+		return;
 	if (lifes < maxLife) {
 		lifeMutex.lock();
 		lifes += lifeToHeal;
@@ -88,6 +94,6 @@ void Player::Heal(int lifeToHeal)
 			lifes = maxLife;
 		}
 		lifeMutex.unlock();
+		potionsCounter--;
 	}
-	
 }

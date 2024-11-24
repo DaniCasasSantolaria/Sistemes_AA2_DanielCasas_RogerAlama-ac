@@ -3,6 +3,7 @@
 
 Node::Node(Vector2 position, INodeContent* content) {
 	_position = position;
+	_content = content;
 }
 
 INodeContent* Node::GetContent() {
@@ -16,10 +17,8 @@ void Node::SetContent(NodeContent newContent) {
 void Node::DrawContent(Vector2 offset) {
 	if (_content == nullptr) {
 		Vector2 pos = offset + _position;
-		CC::Lock();
-		CC::SetPosition(pos.x, pos.y);
-		std::cout << " ";
-		CC::Unlock();
+		//CC::SetPosition(pos.x, pos.y);
+		_content->Draw(Vector2(pos.x, pos.y));
 		return;
 	}
 
