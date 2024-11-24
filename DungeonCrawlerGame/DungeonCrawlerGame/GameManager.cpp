@@ -10,6 +10,30 @@ GameManager::GameManager() {
     currentMap = maps[4];
     maps[0]->Draw();
 }
+
+void GameManager::Code() {
+    Json::Value jsonArray = Json::Value(Json::arrayValue);
+    jsonArray.append(player->Code());
+    for(Enemy* enemy : enemies)
+        jsonArray.append(enemy->Code());
+    for (NodeMap* map : maps)
+        jsonArray.append(map->Code());
+    jsonArray.append(currentMap->Code());
+}
+
+void GameManager::Decode(Json::Value json) {
+    player->Decode(json);
+    /*for (Json::Value value : readedJson) {
+        Enemy* e = ICodable::FromJson<Enemy>(value);
+        readWeapons.push_back(e);
+    }*/
+    /*for (Json::Value value : readedJson) {
+       NodeMap* m = ICodable::FromJson<NodeMap>(value);
+       readWeapons.push_back(m);
+   }*/
+    currentMap->Decode(json);
+}
+
 void GameManager::Update(float dt)
 {
  /* for (Enemy* e : enemies) {

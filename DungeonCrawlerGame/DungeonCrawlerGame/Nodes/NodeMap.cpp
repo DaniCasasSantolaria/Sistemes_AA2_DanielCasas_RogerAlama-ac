@@ -48,6 +48,44 @@ Vector2 NodeMap::GetSize() {
 	return size;
 }
 
+Json::Value NodeMap::Code() {
+	Json::Value json = Json::Value();
+	json["offsetX"] = _offset.x;
+	json["offsetY"] = _offset.y;
+	_sizeMutex.lock();
+	json["sizeX"] = _size.x;
+	json["sizeY"] = _size.y;
+	_sizeMutex.unlock();
+	_gridMutex.lock();
+	for (NodeColumn* column : _grid) {
+		for (Node* node : *column) {
+			node->Lock();
+			json.append(node->Code());
+			node->Unlock();
+		}
+	}
+	_gridMutex.unlock();
+	return json;
+}
+
+void NodeMap::Decode(Json::Value json) {
+	_offset.x = json["offsetX"].asInt();
+	_offset.y = json["offsetY"].asInt();
+	_sizeMutex.lock();
+	_size.x = json["sizeX"].asUInt();
+	_size.y = json["sizeY"].asUInt();
+	_sizeMutex.unlock();
+	_gridMutex.lock();
+	for (NodeColumn* column : _grid) {
+		for (Node* node : *column) {
+			node->Lock();
+			node->Decode(json["node"]);
+			node->Unlock();
+		}
+	}
+	_gridMutex.unlock();
+}
+
 void NodeMap::Draw() {
 	_gridMutex.lock();
 	for (NodeColumn* column : _grid) {

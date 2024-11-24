@@ -44,6 +44,43 @@ Player::~Player() {
 	delete position;
 }
 
+Json::Value Player::Code() {
+	Json::Value json = Json::Value();
+	json.append(position->Code());
+	coinsMutex.lock();
+	json["coins"] = coinCounter;
+	coinsMutex.unlock();
+	lifeMutex.lock();
+	json["lifes"] = lifes;
+	lifeMutex.unlock();
+	json["maxlife"] = maxLife;
+	json["potionsCounter"] = potionsCounter;
+	json["cooldown"] = cooldown;
+	json["lastTimeMoved"] = lastTimeMoved;
+	for(Weapon* weapon : weapons)
+		json.append(weapon->Code());
+	json.append(equipedWeapon->Code());
+	return json;
+}
+
+void Player::Decode(Json::Value json) {
+	position->Decode(json);
+	coinsMutex.lock();
+	coinCounter = json["coins"].asUInt();
+	coinsMutex.unlock();
+	lifeMutex.lock();
+	lifes = json["lifes"].asUInt();
+	lifeMutex.unlock();
+	maxLife = json["maxlife"].asUInt();
+	potionsCounter = json["potionsCounter"].asUInt();
+	cooldown = json["cooldown"].asFloat();
+	lastTimeMoved = json["lastTimeMoved"].asFloat();
+	/*for (Json::Value value : readedJson) {
+		Weapon* w = ICodable::FromJson<Weapon>(value);
+		readWeapons.push_back(w);
+	}*/
+}
+
 void Player::Attack(EnemyDamageable* enemy) {
 	equipedWeapon->Attack();
 }
@@ -74,8 +111,8 @@ void Player::ReceiveMoreCoins(int amount) {
 void Player::Update(float dt) {
 	if (lastTimeMoved < dt - cooldown) {
 		lastTimeMoved = dt;
-		std::thread* movement = new std::thread(ActivatePlayer);
-		movement->detach();
+		std::thread movement(&Player::ActivatePlayer, this);
+		movement.detach();
 	}
 }
 

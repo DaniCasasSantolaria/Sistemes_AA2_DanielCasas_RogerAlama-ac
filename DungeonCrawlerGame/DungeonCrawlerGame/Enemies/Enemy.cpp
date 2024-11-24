@@ -1,5 +1,24 @@
 #include "Enemy.h"
 #include <thread>
+
+Json::Value Enemy::Code() {
+	Json::Value json = Json::Value();
+	json["life"] = life;
+	json["attack"] = attack;
+	json["movementCooldown"] = movementCooldown;
+	json["lastTimeMove"] = lastTimeMove;
+	json["isDead"] = isDead;
+	return json;
+}
+
+void Enemy::Decode(Json::Value json) {
+	life = json["life"].asInt();
+	attack = json["attack"].asUInt();
+	movementCooldown = json["movementCooldown"].asFloat();
+	lastTimeMove = json["lastTimeMove"].asFloat();
+	isDead = json["isDead"].asBool();
+}
+
 void Enemy::Move() {
 	bool canMove = false;
 	while(!canMove){
@@ -11,7 +30,8 @@ void Enemy::Move() {
 void Enemy::Update(float dt) {
 	if(lastTimeMove < dt - movementCooldown) {
 		lastTimeMove = dt;
-		std::thread* move = new std::thread(Move);
+		std::thread move(&Enemy::Move, this);
+		move.detach();
 	}
 }
 

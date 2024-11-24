@@ -1,6 +1,16 @@
 #include "INodeContent.h"
 #include "../ConsoleControl/ConsoleControl.h"
 
+Json::Value INodeContent::Code() {
+	Json::Value json = Json::Value();
+	json["content"] = _content;
+	return json;
+}
+
+void INodeContent::Decode(Json::Value json) {
+	_content = json["content"].asCString()[0];
+}
+
 INodeContent::INodeContent(NodeContent content) {
 	switch (content) {
 	case NodeContent::PLAYER:

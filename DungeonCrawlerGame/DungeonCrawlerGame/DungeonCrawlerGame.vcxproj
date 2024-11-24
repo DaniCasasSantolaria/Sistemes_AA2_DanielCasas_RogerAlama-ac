@@ -132,6 +132,7 @@
     <ClCompile Include="dist\jsoncpp.cpp" />
     <ClCompile Include="Enemies\Enemy.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="ICodable\ICodable.cpp" />
     <ClCompile Include="InputManager\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Nodes\INodeContent.cpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Player\Weapons\Spear.cpp" />
     <ClCompile Include="Player\Weapons\Sword.cpp" />
+    <ClCompile Include="Player\Weapons\Weapon.cpp" />
     <ClCompile Include="Vector2\Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +154,7 @@
     <ClInclude Include="Enemies\EnemyAttack.h" />
     <ClInclude Include="Enemies\EnemyDamage.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="ICodable\ICodable.h" />
     <ClInclude Include="InputManager\InputManager.h" />
     <ClInclude Include="InputManager\InputsConsts.h" />
     <ClInclude Include="Nodes\INodeContent.h" />

@@ -1,7 +1,8 @@
 #pragma once
 #include "EnemyAttack.h"
+#include "../ICodable/ICodable.h"
 
-class Enemy : public EnemyAttackable, public EnemyDamageable {
+class Enemy : public EnemyAttackable, public EnemyDamageable, public ICodable {
 private:
 	int life;
 	int attack;
@@ -9,6 +10,8 @@ private:
 	float lastTimeMove = 0.0f;
 	bool isDead = false;
 public:
+	Json::Value Code() override;
+	void Decode(Json::Value json) override;
 
 	Enemy() = default;
 	Enemy(int hp, int attck)
