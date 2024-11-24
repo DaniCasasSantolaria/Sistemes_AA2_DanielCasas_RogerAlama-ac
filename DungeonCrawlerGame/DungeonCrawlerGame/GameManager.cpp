@@ -10,3 +10,13 @@ GameManager::GameManager() {
     currentMap = maps[4];
     maps[0]->Draw();
 }
+void GameManager::Update(float dt)
+{
+ /* for (Enemy* e : enemies) {
+        e->GetIfIsDead();
+        if (e->SetIfIsDead(enemyIsDead)) {
+            LeaveObject();
+            delete e;
+        }
+    }*/
+}

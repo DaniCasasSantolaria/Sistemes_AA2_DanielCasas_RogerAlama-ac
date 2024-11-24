@@ -28,7 +28,7 @@ public:
 	Player();
 	~Player();
 	void Attack(EnemyDamageable* enemy) override;
-	inline void ActivatePlayer(){IS.StartListen();}
+	inline void ActivatePlayer() {IS.StartListen();}
 	inline void DesactivatePlayer() {IS.StopListen();}
 	void ReceiveMoreCoins(int amount);
 	inline void RecievePotion() { potionsCounter++; }
