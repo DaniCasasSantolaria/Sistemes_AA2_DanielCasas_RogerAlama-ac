@@ -8,6 +8,7 @@ private:
 	Player* player;
 	std::vector<Enemy*> enemies;
 	NodeMap* map;
+	bool enemyIsDead;
 public:
 	GameManager();
 	void Start();

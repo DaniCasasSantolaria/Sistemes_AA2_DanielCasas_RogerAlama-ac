@@ -21,4 +21,25 @@ void Enemy::Attack(PlayerDamageable* player) {
 
 void Enemy::ReceiveDamage(int damage) {
 	life -= damage;
+	CheckLife();
+}
+
+void Enemy::CheckLife()
+{
+	if (life < 0) {
+		isDead = true;
+	}
+}
+
+void Enemy::LeaveObject()
+{
+	int randomObject = rand() % 2;
+	switch (randomObject) {
+	case 0: //potions
+		break;
+	case 1: //weapons
+		break;
+	case 2: //coins
+		break;
+	}
 }

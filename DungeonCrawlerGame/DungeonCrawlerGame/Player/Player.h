@@ -28,7 +28,7 @@ public:
 	Player();
 	~Player();
 	void Attack(EnemyDamageable* enemy) override;
-	inline void ActivatePlayer(){IS.StartListen();}
+	inline void ActivatePlayer() {IS.StartListen();}
 	inline void DesactivatePlayer() {IS.StopListen();}
 	void Update(float dt);
 	void ReceiveDamage(int damage) override;
