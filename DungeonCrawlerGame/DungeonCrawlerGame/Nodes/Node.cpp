@@ -2,13 +2,15 @@
 #include "../ConsoleControl/ConsoleControl.h"
 
 Json::Value Node::Code() {
-	Json::Value json = Json::Value();
-	Json::Value nodeJson = Json::Value();
+	Json::Value nodeJson(Json::objectValue); // Objeto para las propiedades del nodo
 	nodeJson["nodecontent"] = _content->Code();
 	nodeJson["positionX"] = _position.x;
 	nodeJson["positionY"] = _position.y;
-	json["node"] = nodeJson;
-	return json;
+
+	Json::Value classNode; // Envolver en un objeto con clave "node"
+	classNode["node"] = nodeJson;
+
+	return classNode;
 }
 
 void Node::Decode(Json::Value json) {
