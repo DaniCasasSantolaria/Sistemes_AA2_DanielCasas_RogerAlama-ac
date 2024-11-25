@@ -2,16 +2,27 @@
 #include "../ConsoleControl/ConsoleControl.h"
 
 Json::Value Node::Code() {
-	Json::Value json = _content->Code();
-	json["positionX"] = _position.x;
-	json["positionY"] = _position.y;
+	Json::Value json = Json::Value();
+	Json::Value nodeJson = Json::Value();
+	nodeJson["nodecontent"] = _content->Code();
+	nodeJson["positionX"] = _position.x;
+	nodeJson["positionY"] = _position.y;
+	json["node"] = nodeJson;
 	return json;
 }
 
 void Node::Decode(Json::Value json) {
-	_content->Decode(json["inodecontent"]);
-	_position.x = json["positionX"].asInt();
-	_position.y = json["positionY"].asInt();
+	if (json.isMember("nodecontent")) {
+		_content->Decode(json["nodecontent"]);
+	}
+
+	if (json.isMember("positionX")) {
+		_position.x = json["positionX"].asInt();
+	}
+
+	if (json.isMember("positionY")) {
+		_position.y = json["positionY"].asInt();
+	}
 }
 
 Node::Node(Vector2 position, INodeContent* content) {

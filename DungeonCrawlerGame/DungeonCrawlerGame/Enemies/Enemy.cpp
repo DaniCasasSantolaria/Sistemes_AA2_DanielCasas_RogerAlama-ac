@@ -3,11 +3,13 @@
 
 Json::Value Enemy::Code() {
 	Json::Value json = Json::Value();
-	json["life"] = life;
-	json["attack"] = attack;
-	json["movementCooldown"] = movementCooldown;
-	json["lastTimeMove"] = lastTimeMove;
-	json["isDead"] = isDead;
+	Json::Value jsonEnemy = Json::Value();
+	jsonEnemy["life"] = life;
+	jsonEnemy["attack"] = attack;
+	jsonEnemy["movementCooldown"] = movementCooldown;
+	jsonEnemy["lastTimeMove"] = lastTimeMove;
+	jsonEnemy["isDead"] = isDead;
+	json["enemy"] = jsonEnemy;
 	return json;
 }
 

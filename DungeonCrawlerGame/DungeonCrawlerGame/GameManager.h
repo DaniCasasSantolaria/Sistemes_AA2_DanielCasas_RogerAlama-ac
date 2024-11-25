@@ -12,8 +12,10 @@ private:
 	NodeMap* currentMap;
 public:
 	GameManager();
+	Json::Value CodeEnemies();
+	Json::Value CodeMaps();
 	void Code();
-	void Decode(Json::Value json);
+	void Decode();
 	void Start();
 	void Update(float dt);
 	void End();

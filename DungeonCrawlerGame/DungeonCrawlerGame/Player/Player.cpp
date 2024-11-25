@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../InputManager/InputsConsts.h"
+#include "Weapons/Sword.h"
 
 
 Player::Player() {
@@ -8,6 +9,8 @@ Player::Player() {
 	lifes = 0;
 	potionsCounter = 0;
 	//Initialize weapons and equiped weapon
+	equipedWeapon = new Sword();
+	weapons.push_back(equipedWeapon);
 	InputSystem::KeyBinding* kb1 = IS.AddListener(K_UP, [this]() {
 		positionMutex.lock();
 		position->SetPosition(position->GetPosition() + Vector2(0, 1));
@@ -46,39 +49,67 @@ Player::~Player() {
 
 Json::Value Player::Code() {
 	Json::Value json = Json::Value();
-	json.append(position->Code());
+	Json::Value jsonPlayer = Json::Value();
+	jsonPlayer["position"] = position->Code();
 	coinsMutex.lock();
-	json["coins"] = coinCounter;
+	jsonPlayer["coins"] = coinCounter;
 	coinsMutex.unlock();
 	lifeMutex.lock();
-	json["lifes"] = lifes;
+	jsonPlayer["lifes"] = lifes;
 	lifeMutex.unlock();
-	json["maxlife"] = maxLife;
-	json["potionsCounter"] = potionsCounter;
-	json["cooldown"] = cooldown;
-	json["lastTimeMoved"] = lastTimeMoved;
+	jsonPlayer["maxlife"] = maxLife;
+	jsonPlayer["potionsCounter"] = potionsCounter;
+	jsonPlayer["cooldown"] = cooldown;
+	jsonPlayer["lastTimeMoved"] = lastTimeMoved;
+	Json::Value weaponsArray(Json::arrayValue);
 	for(Weapon* weapon : weapons)
-		json.append(weapon->Code());
-	json.append(equipedWeapon->Code());
+		weaponsArray.append(weapon->Code());
+	jsonPlayer["weapons"] = weaponsArray;
+	jsonPlayer["equipedWeapon"] = equipedWeapon->Code();
+	json["player"] = jsonPlayer;
 	return json;
 }
 
 void Player::Decode(Json::Value json) {
-	position->Decode(json);
+	if (position) {
+		position->Decode(json);
+	}
+
 	coinsMutex.lock();
-	coinCounter = json["coins"].asUInt();
+	if (json.isMember("coins")) {
+		coinCounter = json["coins"].asUInt();
+	}
 	coinsMutex.unlock();
+
 	lifeMutex.lock();
-	lifes = json["lifes"].asUInt();
+	if (json.isMember("lifes")) {
+		lifes = json["lifes"].asUInt();
+	}
 	lifeMutex.unlock();
-	maxLife = json["maxlife"].asUInt();
-	potionsCounter = json["potionsCounter"].asUInt();
-	cooldown = json["cooldown"].asFloat();
-	lastTimeMoved = json["lastTimeMoved"].asFloat();
-	/*for (Json::Value value : readedJson) {
-		Weapon* w = ICodable::FromJson<Weapon>(value);
-		readWeapons.push_back(w);
-	}*/
+
+	if (json.isMember("maxlife")) {
+		maxLife = json["maxlife"].asUInt();
+	}
+
+	if (json.isMember("potionsCounter")) {
+		potionsCounter = json["potionsCounter"].asUInt();
+	}
+
+	if (json.isMember("cooldown")) {
+		cooldown = json["cooldown"].asFloat();
+	}
+
+	if (json.isMember("lastTimeMoved")) {
+		lastTimeMoved = json["lastTimeMoved"].asFloat();
+	}
+
+	if (json.isMember("weapons") && json["weapons"].isArray()) {
+		for (const Json::Value& value : json["weapons"]) {
+			Weapon* w = new Sword();
+			w->Decode(json);
+			weapons.push_back(w);
+		}
+	}
 }
 
 void Player::Attack(EnemyDamageable* enemy) {

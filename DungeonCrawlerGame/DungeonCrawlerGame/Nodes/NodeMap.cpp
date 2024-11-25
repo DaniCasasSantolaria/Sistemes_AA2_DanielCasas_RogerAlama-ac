@@ -52,38 +52,59 @@ Json::Value NodeMap::Code() {
 	Json::Value json = Json::Value();
 	json["offsetX"] = _offset.x;
 	json["offsetY"] = _offset.y;
+
 	_sizeMutex.lock();
 	json["sizeX"] = _size.x;
 	json["sizeY"] = _size.y;
 	_sizeMutex.unlock();
+
+	Json::Value gridArray(Json::arrayValue);
 	_gridMutex.lock();
 	for (NodeColumn* column : _grid) {
+		Json::Value columnArray(Json::arrayValue);
 		for (Node* node : *column) {
 			node->Lock();
-			json.append(node->Code());
+			columnArray.append(node->Code());
 			node->Unlock();
 		}
+		gridArray.append(columnArray);
 	}
 	_gridMutex.unlock();
+	json["grid"] = gridArray;
+	
 	return json;
 }
 
 void NodeMap::Decode(Json::Value json) {
-	_offset.x = json["offsetX"].asInt();
-	_offset.y = json["offsetY"].asInt();
-	_sizeMutex.lock();
-	_size.x = json["sizeX"].asUInt();
-	_size.y = json["sizeY"].asUInt();
-	_sizeMutex.unlock();
 	_gridMutex.lock();
-	for (NodeColumn* column : _grid) {
-		for (Node* node : *column) {
-			node->Lock();
-			node->Decode(json["node"]);
-			node->Unlock();
+	if (json.isMember("grid")) {
+		for (int i = 0; i < json["grid"].size(); i++) {
+			Json::Value columnJson = json["grid"][i];
+			NodeColumn* column = _grid[i];
+			for (int j = 0; j < columnJson.size() && j < column->size(); j++) {
+				Node* node = (*column)[j];
+				node->Lock();
+				node->Decode(columnJson[j]);
+				node->Unlock();
+			}
 		}
 	}
 	_gridMutex.unlock();
+
+	if (json.isMember("offsetX")) {
+		_offset.x = json["offsetX"].asInt();
+	}
+	if (json.isMember("offsetY")) {
+		_offset.y = json["offsetY"].asInt();
+	}
+	_sizeMutex.lock();
+	if (json.isMember("sizeX")) {
+		_size.x = json["sizeX"].asUInt();
+	}
+	if (json.isMember("sizeY")) {
+		_size.y = json["sizeY"].asUInt();
+	}
+	_sizeMutex.unlock();
 }
 
 void NodeMap::Draw() {
