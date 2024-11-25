@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include <thread>
+
 void Enemy::Move() {
 	bool canMove = false;
 	while(!canMove){
@@ -31,15 +32,17 @@ void Enemy::CheckLife()
 	}
 }
 
-void Enemy::LeaveObject()
+Object* Enemy::DropObject()
 {
-	int randomObject = rand() % 2;
+	int randomObject = rand() % 1;
 	switch (randomObject) {
-	case 0: //potions
+	case 0: objectType = ObjectType::POTION;
+		object = new Object(objectType, object->GetNode());
+		return object;
 		break;
-	case 1: //weapons
-		break;
-	case 2: //coins
+	case 1: objectType = ObjectType::COIN;
+		object = new Object(objectType, object->GetNode());
+		return object;
 		break;
 	}
 }
