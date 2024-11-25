@@ -12,7 +12,7 @@ void Enemy::Move() {
 void Enemy::Update(float dt) {
 	if(lastTimeMove < dt - movementCooldown) {
 		lastTimeMove = dt;
-		std::thread* move = new std::thread(Move);
+		//std::thread* move = new std::thread(Move);
 	}
 }
 

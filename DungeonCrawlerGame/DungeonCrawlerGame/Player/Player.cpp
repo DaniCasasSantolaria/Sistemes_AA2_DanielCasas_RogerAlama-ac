@@ -74,8 +74,8 @@ void Player::ReceiveMoreCoins(int amount) {
 void Player::Update(float dt) {
 	if (lastTimeMoved < dt - cooldown) {
 		lastTimeMoved = dt;
-		std::thread* movement = new std::thread(ActivatePlayer);
-		movement->detach();
+	//	std::thread* movement = new std::thread(ActivatePlayer);
+	//	movement->detach();
 	}
 }
 
