@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../InputManager/InputsConsts.h"
+#include "Weapons/Sword.h"
 
 
 Player::Player() {
@@ -7,29 +8,22 @@ Player::Player() {
 	coinCounter = 0;
 	lifes = 0;
 	potionsCounter = 0;
-	//Initialize weapons and equiped weapon
+	equipedWeapon = new Sword();
+	weapons.push_back(equipedWeapon);
 	InputSystem::KeyBinding* kb1 = IS.AddListener(K_UP, [this]() {
-		positionMutex.lock();
-		position->SetPosition(position->GetPosition() + Vector2(0, 1));
-		positionMutex.unlock();
+		movementState = Movement::UP;
 		});
 
 	InputSystem::KeyBinding* kb2 = IS.AddListener(K_LEFT, [this]() {
-		positionMutex.lock();
-		position->SetPosition(position->GetPosition() + Vector2(-1, 0));
-		positionMutex.unlock();
+		movementState = Movement::LEFT;
 		});
 
 	InputSystem::KeyBinding* kb3 = IS.AddListener(K_DOWN, [this]() {
-		positionMutex.lock();
-		position->SetPosition(position->GetPosition() + Vector2(0, -1));
-		positionMutex.unlock();
+		movementState = Movement::DOWN;
 		});
 
 	InputSystem::KeyBinding* kb4 = IS.AddListener(K_RIGHT, [this]() {
-		positionMutex.lock();
-		position->SetPosition(position->GetPosition() + Vector2(1, 0));
-		positionMutex.unlock();
+		movementState = Movement::RIGHT;
 		});
 	InputSystem::KeyBinding* kb5 = IS.AddListener(K_1, [this]() {
 		Heal(15);
@@ -48,22 +42,46 @@ void Player::Attack(EnemyDamageable* enemy) {
 	equipedWeapon->Attack();
 }
 
-//void Player::Move(int key, float dt)
-//{
-//	if (lastTimeMoved < dt - cooldown) {
-//		lastTimeMoved = dt;
-//		switch (key) {
-//		case K_RIGHT:
-//			break;
-//		case K_LEFT:
-//			break;
-//		case K_UP:
-//			break;
-//		case K_DOWN:
-//			break;
-//		}
-//	}
-//}
+void Player::Move(NodeMap* map) {
+	/*if (lastTimeMoved < dt - cooldown) {
+		lastTimeMoved = dt;
+		switch (key) {
+		case K_RIGHT:
+			break;
+		case K_LEFT:
+			break;
+		case K_UP:
+			break;
+		case K_DOWN:
+			break;
+		}
+	}*/
+	positionMutex.lock();
+	Vector2 previousPosition = position->GetPosition();
+	positionMutex.unlock();
+	Vector2 nextPosition {0, 0};
+	switch (movementState) {
+	case Movement::RIGHT:
+		nextPosition += Vector2(1, 0);
+		break;
+	case Movement::LEFT:
+		nextPosition += Vector2(-1, 0);
+		break;
+	case Movement::UP:
+		nextPosition += Vector2(0, 1);
+		break;
+	case Movement::DOWN:
+		nextPosition += Vector2(0, -1);
+		break;
+	default:
+		break;
+	}
+	if (map->GetNodeContent(nextPosition)->GetContent() == NodeContent::NOTHING) {
+		positionMutex.lock();
+		position->SetPosition(position->GetPosition() + nextPosition);
+		positionMutex.unlock();
+	}
+}
 
 void Player::ReceiveMoreCoins(int amount) {
 	coinsMutex.lock();
@@ -74,8 +92,6 @@ void Player::ReceiveMoreCoins(int amount) {
 void Player::Update(float dt) {
 	if (lastTimeMoved < dt - cooldown) {
 		lastTimeMoved = dt;
-	//	std::thread* movement = new std::thread(ActivatePlayer);
-	//	movement->detach();
 	}
 }
 
@@ -83,6 +99,17 @@ void Player::ReceiveDamage(int damage) {
 	lifeMutex.lock();
 	lifes -= damage;
 	lifeMutex.unlock();
+}
+
+void Player::TakeObject(Object* object) {
+	if (object->GetType() == ObjectType::COIN) {
+		coinsMutex.lock();
+		coinCounter += rand() % ((5 - 3 + 1) + 3);
+		coinsMutex.unlock();
+	}
+	else if (object->GetType() == ObjectType::POTION) {
+		potionsCounter++;
+	}
 }
 
 void Player::Heal(int lifeToHeal)

@@ -2,6 +2,7 @@
 #include "../ConsoleControl/ConsoleControl.h"
 
 INodeContent::INodeContent(NodeContent content) {
+	nodeContent = content;
 	switch (content) {
 	case NodeContent::PLAYER:
 		_content = 'J';

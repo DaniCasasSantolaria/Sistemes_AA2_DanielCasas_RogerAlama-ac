@@ -48,6 +48,14 @@ Vector2 NodeMap::GetSize() {
 	return size;
 }
 
+INodeContent* NodeMap::GetNodeContent(Vector2 position) {
+	_gridMutex.lock();
+	NodeColumn* column = _grid[position.x];
+	_gridMutex.unlock();
+	Node* node = (*column)[position.y];
+	return node->GetINodeContent();
+}
+
 void NodeMap::Draw() {
 	_gridMutex.lock();
 	for (NodeColumn* column : _grid) {
