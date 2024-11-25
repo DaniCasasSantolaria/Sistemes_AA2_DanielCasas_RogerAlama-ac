@@ -75,7 +75,7 @@ void NodeMap::SafePickNode(Vector2 position, SafePick safePickAction) {
 
 void NodeMap::SafeMultiPickNode(std::list<Vector2> positions, SafeMultiPick safeMultiPickAction) {
 	std::list<Node*> nodes = std::list<Node*>();
-
+ 
 	_sizeMutex.lock();
 	_gridMutex.lock();
 

@@ -159,6 +159,7 @@
     <ClInclude Include="Nodes\NodeMap.h" />
     <ClInclude Include="Objects\Chest.h" />
     <ClInclude Include="Objects\Object.h" />
+    <ClInclude Include="Objects\SpawnerObjects.h" />
     <ClInclude Include="Player\PlayerAttack.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Player\PlayerDamage.h" />
