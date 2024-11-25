@@ -4,9 +4,16 @@
 class Chest {
 private:
 	Object* object;
+	Node* node;
+	int life = 2;
+	
 public:
-	Chest(Object* object)
-		: object(object) {}
-	void OpenChest(Player* player);
-	inline ~Chest() { delete object; }
+	Chest(Object* object, Node* node)
+		: object(object), node(node) {}
+	void DestroyChest(Player* player);
+	inline ~Chest() {
+		delete object;
+		delete node;
+	}
+	inline void ReceiveDamage() { life -= 1; };
 };

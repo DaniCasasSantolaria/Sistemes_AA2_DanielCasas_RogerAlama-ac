@@ -138,7 +138,6 @@
     <ClCompile Include="Nodes\Node.cpp" />
     <ClCompile Include="Nodes\NodeMap.cpp" />
     <ClCompile Include="Objects\Chest.cpp" />
-    <ClCompile Include="Objects\Object.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Player\Weapons\Spear.cpp" />
     <ClCompile Include="Player\Weapons\Sword.cpp" />
@@ -151,6 +150,7 @@
     <ClInclude Include="Enemies\Enemy.h" />
     <ClInclude Include="Enemies\EnemyAttack.h" />
     <ClInclude Include="Enemies\EnemyDamage.h" />
+    <ClInclude Include="Enemies\SpawnerEnemies.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="InputManager\InputManager.h" />
     <ClInclude Include="InputManager\InputsConsts.h" />
@@ -159,6 +159,7 @@
     <ClInclude Include="Nodes\NodeMap.h" />
     <ClInclude Include="Objects\Chest.h" />
     <ClInclude Include="Objects\Object.h" />
+    <ClInclude Include="Objects\SpawnerChests.h" />
     <ClInclude Include="Objects\SpawnerObjects.h" />
     <ClInclude Include="Player\PlayerAttack.h" />
     <ClInclude Include="Player\Player.h" />

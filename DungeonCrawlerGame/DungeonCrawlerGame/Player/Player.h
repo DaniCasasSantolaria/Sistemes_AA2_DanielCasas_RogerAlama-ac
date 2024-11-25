@@ -36,4 +36,5 @@ public:
 	void Update(float dt);
 	void ReceiveDamage(int damage) override;
 	void Heal(int lifeToHeal) override;
+
 };

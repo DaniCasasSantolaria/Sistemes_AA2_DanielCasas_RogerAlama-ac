@@ -18,6 +18,9 @@ INodeContent::INodeContent(NodeContent content) {
 	case NodeContent::PORTAL:
 		_content = 'P';
 		break;
+	case NodeContent::CHEST:
+		_content = '?';
+		break;
 	case NodeContent::NOTHING:
 		_content = ' ';
 		break;
@@ -43,6 +46,9 @@ void INodeContent::SetContent(NodeContent content) {
 		break;
 	case NodeContent::PORTAL:
 		_content = 'P';
+		break;
+	case NodeContent::CHEST:
+		_content = '?';
 		break;
 	case NodeContent::NOTHING:
 		_content = ' ';
