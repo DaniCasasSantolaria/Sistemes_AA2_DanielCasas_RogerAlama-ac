@@ -7,7 +7,6 @@ private:
 	ObjectType type;
 	Node* node;
 public:
-	Object();
 	Object(ObjectType type, Node* node) : type(type), node(node) {}
 	inline ObjectType GetType() { return type; }
 	inline Node* GetNode() { return node; }

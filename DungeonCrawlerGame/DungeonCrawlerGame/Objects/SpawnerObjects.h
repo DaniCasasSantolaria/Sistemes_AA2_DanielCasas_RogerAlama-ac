@@ -4,12 +4,13 @@
 #include "../Enemies/Enemy.h"
 class SpawnerObjects
 {
-private:
-	Vector2 position;
-	ObjectType objectType;
-	Object* object;
+
 public:
-	SpawnerObjects(Vector2 pos, ObjectType oType) : position(pos), objectType(oType) {}
-	void SpawnObject(Node* node);
+	SpawnerObjects() = default;
+	inline void SpawnObject(Vector2 position) {
+		ObjectType random = static_cast<ObjectType> (rand() % 2);
+		Node* node = new Node(position, new INodeContent(NodeContent::OBJECT));
+		Object* object = new Object(random, node);
+	};
 };
 
