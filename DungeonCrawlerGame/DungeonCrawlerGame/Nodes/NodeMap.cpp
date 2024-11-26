@@ -1,5 +1,6 @@
 #include "NodeMap.h"
 #include <iostream>
+#include "../ConsoleControl/ConsoleControl.h"
 
 Node* NodeMap::GetNode(Vector2 position) {
 	_sizeMutex.lock();
@@ -57,16 +58,19 @@ INodeContent* NodeMap::GetNodeContent(Vector2 position) {
 }
 
 void NodeMap::Draw() {
+	CC::Lock();
+	CC::SetPosition(0, 0);
 	_gridMutex.lock();
 	for (NodeColumn* column : _grid) {
 		for (Node* node : *column) {
 			node->Lock();
-			node->DrawContent(_offset);
+			node->DrawContent();
 			node->Unlock();
 		}
 		std::cout << std::endl;
 	}
 	_gridMutex.unlock();
+	CC::Unlock();
 }
 
 void NodeMap::SafePickNode(Vector2 position, SafePick safePickAction) {

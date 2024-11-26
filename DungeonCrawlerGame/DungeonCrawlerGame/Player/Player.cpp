@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "../InputManager/InputsConsts.h"
 #include "Weapons/Sword.h"
+#include "../ConsoleControl/ConsoleControl.h"
 
 
 Player::Player() {
@@ -42,24 +43,24 @@ void Player::Attack(EnemyDamageable* enemy) {
 	equipedWeapon->Attack();
 }
 
-void Player::Move(NodeMap* map) {
-	/*if (lastTimeMoved < dt - cooldown) {
-		lastTimeMoved = dt;
-		switch (key) {
-		case K_RIGHT:
-			break;
-		case K_LEFT:
-			break;
-		case K_UP:
-			break;
-		case K_DOWN:
-			break;
-		}
-	}*/
+void Player::ReceiveMoreCoins(int amount) {
+	coinsMutex.lock();
+	coinCounter += amount;
+	coinsMutex.unlock();
+}
+
+Vector2 Player::GetPosition() {
+	positionMutex.lock();
+	Vector2 auxPos = position->GetPosition();
+	positionMutex.unlock();
+	return auxPos;
+}
+
+void Player::UpdatePosition() {
 	positionMutex.lock();
 	Vector2 previousPosition = position->GetPosition();
 	positionMutex.unlock();
-	Vector2 nextPosition {0, 0};
+	Vector2 nextPosition{ 0, 0 };
 	switch (movementState) {
 	case Movement::RIGHT:
 		nextPosition += Vector2(1, 0);
@@ -76,23 +77,10 @@ void Player::Move(NodeMap* map) {
 	default:
 		break;
 	}
-	if (map->GetNodeContent(nextPosition)->GetContent() == NodeContent::NOTHING) {
-		positionMutex.lock();
-		position->SetPosition(position->GetPosition() + nextPosition);
-		positionMutex.unlock();
-	}
-}
-
-void Player::ReceiveMoreCoins(int amount) {
-	coinsMutex.lock();
-	coinCounter += amount;
-	coinsMutex.unlock();
-}
-
-void Player::Update(float dt) {
-	if (lastTimeMoved < dt - cooldown) {
-		lastTimeMoved = dt;
-	}
+	positionMutex.lock();
+	position->SetPosition(position->GetPosition() + nextPosition);
+	positionMutex.unlock();
+	movementState = Movement::IDLE;
 }
 
 void Player::ReceiveDamage(int damage) {
@@ -125,4 +113,11 @@ void Player::Heal(int lifeToHeal)
 		lifeMutex.unlock();
 		potionsCounter--;
 	}
+}
+
+void Player::Draw() {
+	CC::Lock();
+	CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
+	position->GetContent()->Draw();
+	CC::Unlock();
 }

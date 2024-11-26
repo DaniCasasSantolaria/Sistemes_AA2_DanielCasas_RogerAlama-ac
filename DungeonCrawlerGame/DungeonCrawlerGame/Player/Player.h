@@ -23,7 +23,6 @@ private:
 	int maxLife = 100;
 	int potionsCounter;
 	float cooldown = 1.0f;
-	float lastTimeMoved = 0.0f;
 	std::vector<Weapon*> weapons;
 	Weapon* equipedWeapon;
 
@@ -35,9 +34,11 @@ public:
 	inline void DesactivatePlayer() {IS.StopListen();}
 	void ReceiveMoreCoins(int amount);
 	inline void RecievePotion() { potionsCounter++; }
-	void Move(NodeMap* map);
-	void Update(float dt);
+	inline int GetCooldownMovement() const { return cooldown; }
+	Vector2 GetPosition();
+	void UpdatePosition();
 	void ReceiveDamage(int damage) override;
 	void TakeObject(Object* object);
 	void Heal(int lifeToHeal) override;
+	void Draw();
 };

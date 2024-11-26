@@ -11,8 +11,10 @@ private:
 	NodeMap* currentMap;
 public:
 	GameManager();
+	void PrintNewMap();
+	void Print();
 	void Start();
-	void Update(float dt);
+	void Update();
 	void End();
 	~GameManager();
 };

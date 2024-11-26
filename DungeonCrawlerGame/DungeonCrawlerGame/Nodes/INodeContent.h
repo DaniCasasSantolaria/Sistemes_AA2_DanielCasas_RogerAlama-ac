@@ -13,5 +13,5 @@ public:
 	INodeContent(NodeContent content);
 	void SetContent(NodeContent content);
 	inline NodeContent GetContent() const { return nodeContent; }
-	void Draw(Vector2 offset);
+	void Draw();
 };
