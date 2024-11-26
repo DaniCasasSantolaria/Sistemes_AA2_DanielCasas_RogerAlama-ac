@@ -22,9 +22,6 @@ public:
 	void SetContent(NodeContent newContent);
 	void DrawContent();
 
-	//Crear dues funcions noves.
-	//Funció void CheckContent()
-
 	inline void SetPosition(Vector2 position) { _position = position; }
 	inline Vector2 GetPosition() { return _position; }
 	inline INodeContent* GetINodeContent() { return _content; }

@@ -37,7 +37,6 @@ NodeMap::NodeMap(Vector2 size, Vector2 offset) {
 			else
 				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::NOTHING)));
 		}
-
 		_grid.push_back(column);
 	}
 }

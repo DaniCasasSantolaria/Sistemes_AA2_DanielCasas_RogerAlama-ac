@@ -23,6 +23,7 @@ private:
 	std::mutex lifeMutex;
 	int maxLife = 100;
 	int potionsCounter;
+	std::mutex potionsMutex;
 	float cooldown = 1.0f;
 	std::vector<Weapon*> weapons;
 	Weapon* equipedWeapon;
@@ -34,6 +35,9 @@ public:
 	inline void ActivatePlayer() {IS.StartListen();}
 	inline void DesactivatePlayer() {IS.StopListen();}
 	void ReceiveMoreCoins(int amount);
+	int GetLifes();
+	int GetCoins();
+	int GetAmountPotions();
 	inline void RecievePotion() { potionsCounter++; }
 	inline int GetCooldownMovement() const { return cooldown; }
 	inline PlayerState GetPlayerState() const { return movementState; }

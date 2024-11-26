@@ -22,6 +22,7 @@ GameManager::GameManager() {
 void GameManager::PrintNewMap() {
     system("cls");
     currentMap->Draw();
+    Print();
 }
 
 void GameManager::CheckPortals() {
@@ -62,6 +63,16 @@ void GameManager::Print() {
     for(Enemy* e : enemies){
         e->Draw();
     }
+    CC::Lock();
+    CC::SetPosition(currentMap->GetSize().x + 10, 0);
+    std::cout << "Monedas: " << player->GetCoins();
+    CC::SetPosition(currentMap->GetSize().x + 10, 1);
+    std::cout << "Vidas: " << player->GetLifes();
+    CC::SetPosition(currentMap->GetSize().x + 10, 2);
+    std::cout << "Pociones: " << player->GetAmountPotions();
+    CC::SetPosition(currentMap->GetSize().x + 10, 3);
+    /*std::cout << "Pociones: " << player->GetWeapon();*/ //Falta hacer un enum per poder fer el cout
+    CC::Unlock();
     CC::Lock();
     CC::SetPosition(currentMap->GetSize().x, currentMap->GetSize().y);
     CC::Unlock();

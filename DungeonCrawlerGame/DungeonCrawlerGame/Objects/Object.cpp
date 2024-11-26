@@ -4,6 +4,10 @@
 #include "../ConsoleControl/ConsoleControl.h"
 #include <iostream>
 
+void Object::Draw() {
+	node->DrawContent();
+}
+
 void Object::PrintObject()
 {
 	CC::Lock();

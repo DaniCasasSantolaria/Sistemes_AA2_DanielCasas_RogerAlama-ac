@@ -52,6 +52,28 @@ void Player::ReceiveMoreCoins(int amount) {
 	coinsMutex.unlock();
 }
 
+int Player::GetLifes() {
+	lifeMutex.lock();
+	int amountLifes = lifes;
+	lifeMutex.unlock();
+
+	return amountLifes;
+}
+
+int Player::GetCoins() {
+	coinsMutex.lock();
+	int coins = coinCounter;
+	coinsMutex.unlock();
+	return coins;
+}
+
+int Player::GetAmountPotions() {
+	potionsMutex.lock();
+	int amountPotions = potionsCounter;
+	potionsMutex.unlock();
+	return amountPotions;
+}
+
 Vector2 Player::GetPosition() {
 	positionMutex.lock();
 	Vector2 auxPos = position->GetPosition();
@@ -108,8 +130,13 @@ void Player::TakeObject(Object* object) {
 
 void Player::Heal(int lifeToHeal)
 {
-	if (potionsCounter < 0)
+	potionsMutex.lock();
+	int potions = potionsCounter;
+	potionsMutex.unlock();
+
+	if (potions < 0)
 		return;
+
 	if (lifes < maxLife) {
 		lifeMutex.lock();
 		lifes += lifeToHeal;
@@ -117,7 +144,9 @@ void Player::Heal(int lifeToHeal)
 			lifes = maxLife;
 		}
 		lifeMutex.unlock();
+		potionsMutex.lock();
 		potionsCounter--;
+		potionsMutex.unlock();
 	}
 }
 
