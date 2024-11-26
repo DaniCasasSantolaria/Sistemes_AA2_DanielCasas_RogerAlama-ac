@@ -7,10 +7,11 @@ class SpawnerObjects
 
 public:
 	SpawnerObjects() = default;
-	inline void SpawnObject(Vector2 position) {
+	Object* SpawnObject(Vector2 position) {
 		ObjectType random = static_cast<ObjectType> (rand() % 2);
 		Node* node = new Node(position, new INodeContent(NodeContent::OBJECT));
 		Object* object = new Object(random, node);
+		return object;
 	};
 };
 

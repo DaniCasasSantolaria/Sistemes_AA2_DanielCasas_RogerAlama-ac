@@ -59,8 +59,5 @@ void INodeContent::SetContent(NodeContent content) {
 }
 
 void INodeContent::Draw(Vector2 offset) {
-	CC::Lock();
-	CC::SetPosition(offset.x, offset.y);
 	std::cout << _content;
-	CC::Unlock();
 }
