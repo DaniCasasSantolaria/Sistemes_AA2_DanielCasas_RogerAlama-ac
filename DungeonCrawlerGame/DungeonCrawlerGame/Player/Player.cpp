@@ -12,22 +12,26 @@ Player::Player() {
 	equipedWeapon = new Sword();
 	weapons.push_back(equipedWeapon);
 	InputSystem::KeyBinding* kb1 = IS.AddListener(K_UP, [this]() {
-		movementState = Movement::UP;
+		std::cout << "GOLA";
+		SetMovementState(PlayerState::UP);
 		});
 
 	InputSystem::KeyBinding* kb2 = IS.AddListener(K_LEFT, [this]() {
-		movementState = Movement::LEFT;
+		SetMovementState(PlayerState::LEFT);
 		});
 
 	InputSystem::KeyBinding* kb3 = IS.AddListener(K_DOWN, [this]() {
-		movementState = Movement::DOWN;
+		SetMovementState(PlayerState::DOWN);
 		});
 
 	InputSystem::KeyBinding* kb4 = IS.AddListener(K_RIGHT, [this]() {
-		movementState = Movement::RIGHT;
+		SetMovementState(PlayerState::RIGHT);
 		});
 	InputSystem::KeyBinding* kb5 = IS.AddListener(K_1, [this]() {
 		Heal(15);
+		});
+	InputSystem::KeyBinding* kb6 = IS.AddListener(K_SPACE, [this]() {
+		SetMovementState(PlayerState::ATTACK);
 		});
 }
 
@@ -40,7 +44,7 @@ Player::~Player() {
 }
 
 void Player::Attack(EnemyDamageable* enemy) {
-	equipedWeapon->Attack();
+	enemy->ReceiveDamage(equipedWeapon->Attack());
 }
 
 void Player::ReceiveMoreCoins(int amount) {
@@ -62,16 +66,16 @@ void Player::UpdatePosition() {
 	positionMutex.unlock();
 	Vector2 nextPosition{ 0, 0 };
 	switch (movementState) {
-	case Movement::RIGHT:
+	case PlayerState::RIGHT:
 		nextPosition += Vector2(1, 0);
 		break;
-	case Movement::LEFT:
+	case PlayerState::LEFT:
 		nextPosition += Vector2(-1, 0);
 		break;
-	case Movement::UP:
+	case PlayerState::UP:
 		nextPosition += Vector2(0, 1);
 		break;
-	case Movement::DOWN:
+	case PlayerState::DOWN:
 		nextPosition += Vector2(0, -1);
 		break;
 	default:
@@ -80,7 +84,7 @@ void Player::UpdatePosition() {
 	positionMutex.lock();
 	position->SetPosition(position->GetPosition() + nextPosition);
 	positionMutex.unlock();
-	movementState = Movement::IDLE;
+	movementState = PlayerState::IDLE;
 }
 
 void Player::ReceiveDamage(int damage) {

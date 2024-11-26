@@ -8,10 +8,21 @@ GameManager::GameManager() {
         for(int j = -10; j < 30; j += 10)
             maps.push_back(new NodeMap(Vector2(11, 11), Vector2(j, i)));
     }
-    currentMap = maps[4];
+    currentMap = maps[currentMapNumber];
 }
 void GameManager::PrintNewMap() {
+    system("cls");
     currentMap->Draw();
+}
+
+void GameManager::CheckPortals() {
+    if (player->GetPosition().x == 0 && player->GetPosition().y == currentMap->GetSize().y / 2
+        && currentMapNumber > 2) {
+        currentMapNumber -= 3;
+        currentMap = maps[currentMapNumber];
+    }
+    /*else if(player->GetPosition().x == currentMap->GetSize().x / 2 && player->GetPosition().y == currentMap->GetSize().y
+        && currentMapNumber > 2)*/
 }
 
 void GameManager::Print() {

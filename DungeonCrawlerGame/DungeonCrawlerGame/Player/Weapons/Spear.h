@@ -3,5 +3,5 @@
 
 class Spear : public Weapon {
 public:
-	void Attack() override;
+	int Attack() /*override*/;
 };

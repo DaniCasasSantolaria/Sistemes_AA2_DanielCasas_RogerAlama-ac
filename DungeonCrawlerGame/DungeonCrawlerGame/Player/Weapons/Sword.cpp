@@ -1,5 +1,5 @@
 #include "Sword.h"
 
-void Sword::Attack() {
+int Sword::Attack() {
 
 }

@@ -8,5 +8,5 @@ public:
 	Weapon() = default;
 	Weapon(int distance, int dmg)
 		: distanceAttack(distance), damage(dmg) {}
-	virtual void Attack() = 0;
+	virtual int Attack() { return damage; };
 };

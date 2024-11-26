@@ -12,8 +12,8 @@
 
 class Player : public PlayerAttackable, public PlayerDamageable, public PlayerHealing {
 private:
-	enum class Movement { RIGHT, LEFT, UP, DOWN, IDLE };
-	Movement movementState = Movement::IDLE;
+	enum class PlayerState { RIGHT, LEFT, UP, DOWN, IDLE, ATTACK };
+	PlayerState movementState = PlayerState::IDLE;
 	Node* position;
 	std::mutex positionMutex;
 	int coinCounter;
@@ -35,6 +35,7 @@ public:
 	void ReceiveMoreCoins(int amount);
 	inline void RecievePotion() { potionsCounter++; }
 	inline int GetCooldownMovement() const { return cooldown; }
+	inline void SetMovementState(PlayerState m) { movementState = m; }
 	Vector2 GetPosition();
 	void UpdatePosition();
 	void ReceiveDamage(int damage) override;
