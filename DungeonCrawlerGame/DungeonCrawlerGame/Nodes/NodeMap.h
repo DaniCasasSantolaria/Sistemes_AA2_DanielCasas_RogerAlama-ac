@@ -30,6 +30,7 @@ public:
 
 	Vector2 GetSize();
 
+	INodeContent* GetNodeContent(Vector2 position);
 	void Draw();
 	void SafePickNode(Vector2 position, SafePick safePickAction);
 	void SafeMultiPickNode(std::list<Vector2> position, SafeMultiPick safeMultiPickAction);

@@ -1,5 +1,5 @@
 #include "Spear.h"
 
-void Spear::Attack() {
+int Spear::Attack() {
 	
 }

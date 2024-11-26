@@ -138,10 +138,10 @@
     <ClCompile Include="Nodes\Node.cpp" />
     <ClCompile Include="Nodes\NodeMap.cpp" />
     <ClCompile Include="Objects\Chest.cpp" />
-    <ClCompile Include="Objects\Object.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Player\Weapons\Spear.cpp" />
     <ClCompile Include="Player\Weapons\Sword.cpp" />
+    <ClCompile Include="Timer\Timer.cpp" />
     <ClCompile Include="Vector2\Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +167,7 @@
     <ClInclude Include="Player\Weapons\Spear.h" />
     <ClInclude Include="Player\Weapons\Sword.h" />
     <ClInclude Include="Player\Weapons\Weapon.h" />
+    <ClInclude Include="Timer\Timer.h" />
     <ClInclude Include="Vector2\Vector2.h" />
   </ItemGroup>
   <ItemGroup>

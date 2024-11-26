@@ -20,7 +20,7 @@ public:
 		return contentCasted;
 	}
 	void SetContent(NodeContent newContent);
-	void DrawContent(Vector2 offset);
+	void DrawContent();
 
 	//Crear dues funcions noves.
 	//Funció void CheckContent()

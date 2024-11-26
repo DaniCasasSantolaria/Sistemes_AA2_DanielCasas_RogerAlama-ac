@@ -7,10 +7,13 @@
 #include <mutex>
 #include "../Nodes/Node.h"
 #include "../InputManager/InputManager.h"
-
+#include "../Objects/Object.h"
+#include "../Nodes/NodeMap.h"
 
 class Player : public PlayerAttackable, public PlayerDamageable, public PlayerHealing {
 private:
+	enum class PlayerState { RIGHT, LEFT, UP, DOWN, IDLE, ATTACK };
+	PlayerState movementState = PlayerState::IDLE;
 	Node* position;
 	std::mutex positionMutex;
 	int coinCounter;
@@ -20,7 +23,6 @@ private:
 	int maxLife = 100;
 	int potionsCounter;
 	float cooldown = 1.0f;
-	float lastTimeMoved = 0.0f;
 	std::vector<Weapon*> weapons;
 	Weapon* equipedWeapon;
 
@@ -32,8 +34,12 @@ public:
 	inline void DesactivatePlayer() {IS.StopListen();}
 	void ReceiveMoreCoins(int amount);
 	inline void RecievePotion() { potionsCounter++; }
-	void Move(int key, float dt);
-	void Update(float dt);
+	inline int GetCooldownMovement() const { return cooldown; }
+	inline void SetMovementState(PlayerState m) { movementState = m; }
+	Vector2 GetPosition();
+	void UpdatePosition();
 	void ReceiveDamage(int damage) override;
+	void TakeObject(Object* object);
 	void Heal(int lifeToHeal) override;
+	void Draw();
 };

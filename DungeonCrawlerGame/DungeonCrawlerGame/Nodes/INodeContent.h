@@ -6,10 +6,12 @@ enum class NodeContent { WALL, ENEMY, OBJECT, NOTHING, PLAYER, PORTAL, INVALID};
 
 class INodeContent {
 private:
+	NodeContent nodeContent = NodeContent::INVALID;
 	char _content;
 	std::mutex contentMutex;
 public:
 	INodeContent(NodeContent content);
 	void SetContent(NodeContent content);
-	void Draw(Vector2 offset);
+	inline NodeContent GetContent() const { return nodeContent; }
+	void Draw();
 };

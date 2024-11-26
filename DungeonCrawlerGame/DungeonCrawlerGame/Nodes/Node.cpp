@@ -14,15 +14,14 @@ void Node::SetContent(NodeContent newContent) {
 	_content->SetContent(newContent);
 }
 
-void Node::DrawContent(Vector2 offset) {
+void Node::DrawContent() {
 	if (_content == nullptr) {
-		Vector2 pos = offset + _position;
 		//CC::SetPosition(pos.x, pos.y);
-		_content->Draw(Vector2(pos.x, pos.y));
+		_content->Draw();
 		return;
 	}
 
-	_content->Draw(offset);
+	_content->Draw();
 }
 
 bool Node::IsEmpty() {

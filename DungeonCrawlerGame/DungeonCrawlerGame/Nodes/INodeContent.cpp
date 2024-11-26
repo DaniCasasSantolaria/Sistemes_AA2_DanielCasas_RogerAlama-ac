@@ -1,7 +1,8 @@
 #include "INodeContent.h"
-#include "../ConsoleControl/ConsoleControl.h"
+#include <iostream>
 
 INodeContent::INodeContent(NodeContent content) {
+	nodeContent = content;
 	switch (content) {
 	case NodeContent::PLAYER:
 		_content = 'J';
@@ -52,9 +53,6 @@ void INodeContent::SetContent(NodeContent content) {
 	}
 }
 
-void INodeContent::Draw(Vector2 offset) {
-	CC::Lock();
-	CC::SetPosition(offset.x, offset.y);
+void INodeContent::Draw() {
 	std::cout << _content;
-	CC::Unlock();
 }
