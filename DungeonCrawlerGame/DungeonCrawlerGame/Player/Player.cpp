@@ -30,7 +30,7 @@ Player::Player() {
 		Heal(15);
 		});
 	InputSystem::KeyBinding* kb6 = IS.AddListener(K_SPACE, [this]() {
-		SetMovementState(PlayerState::ATTACK);
+		/*SetMovementState(PlayerState::ATTACK);*/
 		});
 }
 
@@ -80,9 +80,12 @@ void Player::UpdatePosition() {
 	default:
 		break;
 	}
-	positionMutex.lock();
-	position->SetPosition(position->GetPosition() + nextPosition);
-	positionMutex.unlock();
+	if (nextPosition.x != 0 || nextPosition.y != 0) {
+		positionMutex.lock();
+		position->SetPosition(position->GetPosition() + nextPosition);
+		positionMutex.unlock();
+		Draw();
+	}
 	movementState = PlayerState::IDLE;
 }
 

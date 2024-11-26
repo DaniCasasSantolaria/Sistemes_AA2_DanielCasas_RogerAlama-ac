@@ -74,11 +74,7 @@ void NodeMap::Draw() {
 }
 
 void NodeMap::SafePickNode(Vector2 position, SafePick safePickAction) {
-	_sizeMutex.lock();
-	_gridMutex.lock();
 	Node* node = GetNode(position);
-	_gridMutex.unlock();
-	_sizeMutex.unlock();
 
 	node->Lock();
 	safePickAction(node);

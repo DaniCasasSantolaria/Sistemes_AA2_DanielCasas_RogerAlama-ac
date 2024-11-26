@@ -11,8 +11,9 @@
 #include "../Nodes/NodeMap.h"
 
 class Player : public PlayerAttackable, public PlayerDamageable, public PlayerHealing {
+public:
+	enum class PlayerState { RIGHT, LEFT, UP, DOWN, IDLE };
 private:
-	enum class PlayerState { RIGHT, LEFT, UP, DOWN, IDLE, ATTACK };
 	PlayerState movementState = PlayerState::IDLE;
 	Node* position;
 	std::mutex positionMutex;
@@ -35,6 +36,7 @@ public:
 	void ReceiveMoreCoins(int amount);
 	inline void RecievePotion() { potionsCounter++; }
 	inline int GetCooldownMovement() const { return cooldown; }
+	inline PlayerState GetPlayerState() const { return movementState; }
 	inline void SetMovementState(PlayerState m) { movementState = m; }
 	Vector2 GetPosition();
 	void UpdatePosition();
