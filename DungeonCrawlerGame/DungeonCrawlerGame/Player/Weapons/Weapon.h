@@ -1,7 +1,7 @@
 #pragma once
 
 class Weapon {
-private:
+protected:
 	int distanceAttack;
 	int damage;
 public:

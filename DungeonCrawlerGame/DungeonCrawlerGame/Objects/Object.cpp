@@ -4,10 +4,10 @@
 #include "../ConsoleControl/ConsoleControl.h"
 #include <iostream>
 
-void Object::PrintObject(Vector2 position)
+void Object::PrintObject()
 {
 	CC::Lock();
 	CC::SetPosition(node->GetPosition().x, node->GetPosition().y);
-	node->GetContent()->Draw(node->GetPosition());
+	node->GetContent()->Draw();
 	CC::Unlock();
 }

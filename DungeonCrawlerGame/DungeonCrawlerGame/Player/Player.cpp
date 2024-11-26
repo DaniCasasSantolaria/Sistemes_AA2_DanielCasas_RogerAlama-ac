@@ -12,7 +12,6 @@ Player::Player() {
 	equipedWeapon = new Sword();
 	weapons.push_back(equipedWeapon);
 	InputSystem::KeyBinding* kb1 = IS.AddListener(K_UP, [this]() {
-		std::cout << "GOLA";
 		SetMovementState(PlayerState::UP);
 		});
 

@@ -17,7 +17,6 @@ void Node::SetContent(NodeContent newContent) {
 void Node::DrawContent() {
 	if (_content == nullptr) {
 		//CC::SetPosition(pos.x, pos.y);
-		_content->Draw();
 		return;
 	}
 

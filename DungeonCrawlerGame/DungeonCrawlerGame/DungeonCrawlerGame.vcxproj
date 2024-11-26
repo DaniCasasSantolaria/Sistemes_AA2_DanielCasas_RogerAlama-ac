@@ -138,6 +138,7 @@
     <ClCompile Include="Nodes\Node.cpp" />
     <ClCompile Include="Nodes\NodeMap.cpp" />
     <ClCompile Include="Objects\Chest.cpp" />
+    <ClCompile Include="Objects\Object.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Player\Weapons\Spear.cpp" />
     <ClCompile Include="Player\Weapons\Sword.cpp" />
