@@ -2,7 +2,7 @@
 #include "../Vector2/Vector2.h"
 #include <mutex>
 
-enum class NodeContent { WALL, ENEMY, OBJECT, NOTHING, PLAYER, PORTAL, INVALID};
+enum class NodeContent { WALL, ENEMY, OBJECT, NOTHING, PLAYER, PORTAL, CHEST, INVALID};
 
 class INodeContent {
 private:

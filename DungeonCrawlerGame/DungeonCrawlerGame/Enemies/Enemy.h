@@ -17,6 +17,7 @@ public:
 	void Update(float dt);
 	inline void Attack(PlayerDamageable* player) override { player->ReceiveDamage(attack); }
 	inline void ReceiveDamage(int damage) override { life -= damage; }
+	inline void SpawnEnemy(Vector2 position) { Node* node = new Node(position, new INodeContent(NodeContent::ENEMY)); }
 	Object* DropObject();
 	inline bool IsDead() { return life <= 0; }
 

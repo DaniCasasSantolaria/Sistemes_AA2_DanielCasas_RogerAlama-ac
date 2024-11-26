@@ -2,6 +2,7 @@
 #include "Player/Player.h"
 #include "Enemies/Enemy.h"
 #include "Nodes/NodeMap.h"
+#include "Objects/Object.h"
 
 class GameManager {
 private:
@@ -10,6 +11,8 @@ private:
 	std::vector<NodeMap*> maps;
 	NodeMap* currentMap;
 	int currentMapNumber = 4;
+	std::vector<Object*> objects;
+	Object* object;
 public:
 	GameManager();
 	void PrintNewMap();
