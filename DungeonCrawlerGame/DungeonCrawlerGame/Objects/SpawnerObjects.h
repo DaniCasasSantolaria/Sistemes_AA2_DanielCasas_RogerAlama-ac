@@ -2,8 +2,7 @@
 #include "../Nodes/NodeMap.h"
 #include "Object.h"
 #include "../Enemies/Enemy.h"
-class SpawnerObjects
-{
+class SpawnerObjects {
 
 public:
 	SpawnerObjects() = default;

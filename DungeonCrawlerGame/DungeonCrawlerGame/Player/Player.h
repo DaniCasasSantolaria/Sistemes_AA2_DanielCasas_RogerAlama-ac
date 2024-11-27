@@ -45,7 +45,7 @@ public:
 	inline PlayerState GetPlayerState() const { return movementState; }
 	inline void SetMovementState(PlayerState m) { movementState = m; }
 	Vector2 GetPosition();
-	void UpdatePosition();
+	void UpdatePosition(NodeMap* currentMap);
 	void ReceiveDamage(int damage) override;
 	void TakeObject(Object* object);
 	void Heal(int lifeToHeal) override;

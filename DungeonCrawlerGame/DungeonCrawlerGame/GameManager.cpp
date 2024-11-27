@@ -176,7 +176,7 @@ void GameManager::Start() {
 
 void GameManager::Update() {
     /*std::thread* move = new std::thread(Timer::DelayExecute, player->GetCooldownMovement(), [this]() {*/
-        player->UpdatePosition();
+        player->UpdatePosition(currentMap);
         /*});
     move->detach();*/
     /*for (Enemy* e : enemies)
@@ -194,4 +194,8 @@ GameManager::~GameManager() {
     for (NodeMap* map : maps)
         delete map;
     delete currentMap;
+    for (Object* o : objects)
+        delete o;
+    for (Chest* c : chests)
+        delete c;
 }

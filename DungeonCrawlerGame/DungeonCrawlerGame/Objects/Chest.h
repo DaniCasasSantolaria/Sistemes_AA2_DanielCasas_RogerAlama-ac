@@ -11,13 +11,13 @@ public:
 	Chest(Object* object, Node* node)
 		: object(object), node(node) {}
 	void DestroyChest(Player* player);
-	inline ~Chest() {
-		delete object;
-		delete node;
-	}
 	inline void SetObject(Object* object) { this->object = object; }
 	inline void ReceiveDamage() { life -= 1; };
 	inline void SetPosition(Vector2 position) { this->node->SetPosition(position); }
 	void Draw();
 	void SetNode(Node* node);
+	inline ~Chest() {
+		delete object;
+		delete node;
+	}
 };

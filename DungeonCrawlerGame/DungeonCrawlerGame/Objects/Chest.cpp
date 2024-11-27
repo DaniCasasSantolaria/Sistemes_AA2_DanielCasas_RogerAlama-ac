@@ -20,5 +20,3 @@ void Chest::SetNode(Node* node)
 {
 	this->node = node;
 }
-
-

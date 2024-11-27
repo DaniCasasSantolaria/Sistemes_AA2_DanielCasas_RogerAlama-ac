@@ -141,7 +141,7 @@ Vector2 Player::GetPosition() {
 	return auxPos;
 }
 
-void Player::UpdatePosition() {
+void Player::UpdatePosition(NodeMap* currentMap) {
 	positionMutex.lock();
 	Vector2 previousPosition = position->GetPosition();
 	positionMutex.unlock();
@@ -162,12 +162,23 @@ void Player::UpdatePosition() {
 	default:
 		break;
 	}
-	if (nextPosition.x != 0 || nextPosition.y != 0) {
-		positionMutex.lock();
-		position->SetPosition(position->GetPosition() + nextPosition);
-		positionMutex.unlock();
-		Draw();
-	}
+	//SafeMultiPickNode
+	currentMap->SafePickNode(nextPosition, [this, nextPosition](Node* auxNode) {
+		if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
+			positionMutex.lock();
+			position->SetPosition(nextPosition);
+			positionMutex.unlock();
+			//Cada node tiene INode content. Necesitamos acceder a dos nodos, el nodo de la posición previa y la actual.
+			//La previa ponerla en null y la siguiente en player
+			Draw();
+		}
+		});
+	//if (nextPosition.x != 0 || nextPosition.y != 0) {
+	//	positionMutex.lock();
+	//	position->SetPosition(position->GetPosition() + nextPosition);
+	//	positionMutex.unlock();
+	//	Draw();
+	//}
 	movementState = PlayerState::IDLE;
 }
 

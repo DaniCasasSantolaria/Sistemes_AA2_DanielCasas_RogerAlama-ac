@@ -32,4 +32,8 @@ public:
 	Object* DropObject();
 	inline bool IsDead() { return life <= 0; }
 	inline void SetPosition(Vector2 position) { node->SetPosition(position); }
+	inline ~Enemy() {
+		delete node;
+		delete object;
+	}
 };

@@ -30,4 +30,7 @@ public:
 
 	void Lock();
 	void Unlock();
+	inline ~Node() {
+		delete _content;
+	}
 };

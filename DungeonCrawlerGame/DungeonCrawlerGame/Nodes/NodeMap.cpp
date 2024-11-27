@@ -189,8 +189,10 @@ void NodeMap::SafeMultiPickNode(std::list<Vector2> positions, SafeMultiPick safe
 	}
 }
 
-void NodeMap::PrintMap() {
-	/*for (NodeColumn* column : _grid) {
-
-	}*/
+NodeMap::~NodeMap() {
+	for (NodeColumn* column : _grid) {
+		for (Node* node : *column) {
+			delete node;
+		}
+	}
 }

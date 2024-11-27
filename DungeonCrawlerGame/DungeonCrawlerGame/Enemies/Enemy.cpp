@@ -52,7 +52,6 @@ void Enemy::Draw() {
 	CC::Unlock();
 }
 
-Object* Enemy::DropObject()
-{
+Object* Enemy::DropObject() {
 	return object;
 }

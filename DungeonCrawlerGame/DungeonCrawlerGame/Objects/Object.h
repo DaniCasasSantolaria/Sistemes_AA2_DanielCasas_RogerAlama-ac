@@ -14,4 +14,7 @@ public:
 	inline Node* GetNode() { return node; }
 	void Draw();
 	void SetNode(Node* node);
+	inline ~Object() {
+		delete node;
+	}
 };
