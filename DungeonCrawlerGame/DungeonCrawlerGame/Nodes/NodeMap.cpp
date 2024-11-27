@@ -56,6 +56,83 @@ INodeContent* NodeMap::GetNodeContent(Vector2 position) {
 	return node->GetINodeContent();
 }
 
+Json::Value NodeMap::Code() {
+	Json::Value json; // Objeto principal
+	json["offsetX"] = _offset.x;
+	json["offsetY"] = _offset.y;
+
+	_sizeMutex.lock();
+	json["sizeX"] = _size.x;
+	json["sizeY"] = _size.y;
+	_sizeMutex.unlock();
+
+	Json::Value gridArray(Json::arrayValue);
+	_gridMutex.lock();
+	for (NodeColumn* column : _grid) {
+		Json::Value nodesArray(Json::arrayValue);
+		for (Node* node : *column) {
+			node->Lock();
+			nodesArray.append(node->Code());
+			node->Unlock();
+		}
+
+		Json::Value columnJson; 
+		columnJson["nodes"] = nodesArray;          
+		gridArray.append(columnJson);              
+	}
+	_gridMutex.unlock();
+
+	json["grid"] = gridArray;
+	return json;
+}
+
+void NodeMap::Decode(Json::Value json) {
+	_gridMutex.lock();
+
+	Json::Value gridArray = json["grid"];
+	int gridHeight = gridArray.size();
+	_grid.resize(gridHeight);
+
+	for (int i = 0; i < gridHeight; i++) {
+		Json::Value columnJson = gridArray[i];
+
+		Json::Value nodesArray = columnJson["nodes"];
+		int columnWidth = nodesArray.size();
+
+
+		NodeColumn* column = _grid[i];
+		column->resize(columnWidth);
+
+		for (int j = 0; j < columnWidth; j++) {
+			Json::Value nodeJson = nodesArray[j];
+
+			(*column)[j] = new Node(Vector2(0, 0), new INodeContent(NodeContent::INVALID));
+
+			Node* node = (*column)[j];
+			node->Lock();
+			node->Decode(nodeJson["node"]);
+			node->Unlock();
+		}
+	}
+	_gridMutex.unlock();
+
+	if (json.isMember("offsetX")) {
+		_offset.x = json["offsetX"].asInt();
+	}
+	if (json.isMember("offsetY")) {
+		_offset.y = json["offsetY"].asInt();
+	}
+
+	_sizeMutex.lock();
+	if (json.isMember("sizeX")) {
+		_size.x = json["sizeX"].asUInt();
+	}
+	if (json.isMember("sizeY")) {
+		_size.y = json["sizeY"].asUInt();
+	}
+	_sizeMutex.unlock();
+}
+
 void NodeMap::Draw() {
 	CC::Lock();
 	CC::SetPosition(0, 0);

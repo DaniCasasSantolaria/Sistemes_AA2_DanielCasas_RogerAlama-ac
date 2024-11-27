@@ -1,6 +1,19 @@
 #include "INodeContent.h"
 #include <iostream>
 
+Json::Value INodeContent::Code() {
+	Json::Value json = Json::Value();
+	json["content"] = _content;
+	return json;
+}
+
+void INodeContent::Decode(Json::Value json) {
+	if (json.isMember("content")) {
+		int content = json["content"].asInt();
+		_content = (char)content;
+	}
+}
+
 INodeContent::INodeContent(NodeContent content) {
 	nodeContent = content;
 	switch (content) {

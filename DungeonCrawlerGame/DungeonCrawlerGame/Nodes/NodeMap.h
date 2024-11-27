@@ -5,7 +5,7 @@
 #include <list>
 #include "Node.h"
 
-class NodeMap {
+class NodeMap : public ICodable {
 public:
 	typedef std::vector<Node*> NodeColumn;
 	typedef std::vector<NodeColumn*> NodeGrid;
@@ -29,6 +29,8 @@ public:
 	NodeMap(Vector2 size, Vector2 offset);
 
 	Vector2 GetSize();
+	Json::Value Code() override;
+	void Decode(Json::Value json) override;
 
 	INodeContent* GetNodeContent(Vector2 position);
 	void Draw();

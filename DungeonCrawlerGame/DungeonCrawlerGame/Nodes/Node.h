@@ -3,14 +3,15 @@
 #include "INodeContent.h"
 #include <mutex>
 
-class Node {
+class Node : public ICodable {
 private:
 	Vector2 _position;
 	INodeContent* _content = nullptr;
 	std::mutex _classMutex;
 public:
-	/*Node(Vector2 position)
-		: _position(position) {}*/
+	Json::Value Code() override;
+	void Decode(Json::Value json) override;
+
 	Node(Vector2 position, INodeContent* content);
 
 	INodeContent* GetContent();

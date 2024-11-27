@@ -5,7 +5,7 @@
 #include "../Nodes/NodeMap.h"
 #include <mutex>
 
-class Enemy : public EnemyAttackable, public EnemyDamageable {
+class Enemy : public EnemyAttackable, public EnemyDamageable, public ICodable {
 private:
 	int life;
 	int attack;
@@ -21,6 +21,8 @@ public:
 		node = new Node(pos, new INodeContent(NodeContent::ENEMY));
 	}
 	void Move(NodeMap* currentMap);
+	Json::Value Code() override;
+	void Decode(Json::Value json) override;
 	void Update(float dt);
 	inline void Attack(PlayerDamageable* player) override { player->ReceiveDamage(attack); }
 	inline void ReceiveDamage(int damage) override { life -= damage; }

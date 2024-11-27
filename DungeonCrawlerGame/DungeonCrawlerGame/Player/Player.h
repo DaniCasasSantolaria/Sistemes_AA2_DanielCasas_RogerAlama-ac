@@ -17,7 +17,7 @@ private:
 	PlayerState movementState = PlayerState::IDLE;
 	Node* position;
 	std::mutex positionMutex;
-	int coinCounter;
+	int coinCounter = 0;
 	std::mutex coinsMutex;
 	int lifes;
 	std::mutex lifeMutex;
@@ -31,6 +31,8 @@ private:
 public:
 	Player();
 	~Player();
+	Json::Value Code() override;
+	void Decode(Json::Value json) override;
 	void Attack(EnemyDamageable* enemy) override;
 	inline void ActivatePlayer() {IS.StartListen();}
 	inline void DesactivatePlayer() {IS.StopListen();}
