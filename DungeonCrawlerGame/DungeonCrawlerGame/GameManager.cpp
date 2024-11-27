@@ -83,7 +83,7 @@ void GameManager::Decode() {
 
         if (readedJson[1].isMember("enemies")) {
             for (Json::Value value : readedJson[1]["enemies"]) {
-                Enemy* e = new Enemy();
+                Enemy* e = new Enemy(0, 0, Vector2(0,0));
                 e->Decode(value["enemy"]);
                 enemies.push_back(e);
             }

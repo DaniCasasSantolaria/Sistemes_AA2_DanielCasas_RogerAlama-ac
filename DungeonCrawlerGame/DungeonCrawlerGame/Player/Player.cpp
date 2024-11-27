@@ -55,7 +55,6 @@ Json::Value Player::Code() {
 	jsonPlayer["maxlife"] = maxLife;
 	jsonPlayer["potionsCounter"] = potionsCounter;
 	jsonPlayer["cooldown"] = cooldown;
-	jsonPlayer["lastTimeMoved"] = lastTimeMoved;
 	Json::Value weaponsArray(Json::arrayValue);
 	for(Weapon* weapon : weapons)
 		weaponsArray.append(weapon->Code());
@@ -92,10 +91,6 @@ void Player::Decode(Json::Value json) {
 
 	if (json.isMember("cooldown")) {
 		cooldown = json["cooldown"].asFloat();
-	}
-
-	if (json.isMember("lastTimeMoved")) {
-		lastTimeMoved = json["lastTimeMoved"].asFloat();
 	}
 
 	if (json.isMember("weapons") && json["weapons"].isArray()) {

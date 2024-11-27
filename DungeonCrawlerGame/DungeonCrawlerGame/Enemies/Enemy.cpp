@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "../ConsoleControl/ConsoleControl.h"
 #include <thread>
 
 Json::Value Enemy::Code() {
@@ -21,7 +22,7 @@ void Enemy::Decode(Json::Value json) {
 	isDead = json["isDead"].asBool();
 }
 
-void Enemy::Move() {
+void Enemy::Move(NodeMap* currentMap) {
 	bool canMove = false;
 	while(!canMove){
 		int randomX = rand() % ((1 - (-1) + 1) - 1);
@@ -39,12 +40,9 @@ void Enemy::Move() {
 
 }
 
-void Enemy::Update(float dt) {
-	if(lastTimeMove < dt - movementCooldown) {
-		lastTimeMove = dt;
-		std::thread move(&Enemy::Move, this);
-		move.detach();
-	}
+void Enemy::Update() {
+	/*std::thread move(&Enemy::Move, this);
+	move.detach();*/
 }
 
 void Enemy::Draw() {

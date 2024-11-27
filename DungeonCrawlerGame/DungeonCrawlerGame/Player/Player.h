@@ -10,7 +10,7 @@
 #include "../Objects/Object.h"
 #include "../Nodes/NodeMap.h"
 
-class Player : public PlayerAttackable, public PlayerDamageable, public PlayerHealing {
+class Player : public PlayerAttackable, public PlayerDamageable, public PlayerHealing, public ICodable {
 public:
 	enum class PlayerState { RIGHT, LEFT, UP, DOWN, IDLE };
 private:

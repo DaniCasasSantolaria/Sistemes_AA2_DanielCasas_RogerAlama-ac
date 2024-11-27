@@ -1,7 +1,7 @@
 #pragma once
 #include "../ICodable/ICodable.h"
 
-class Weapon {
+class Weapon : public ICodable {
 protected:
 	int distanceAttack;
 	int damage;

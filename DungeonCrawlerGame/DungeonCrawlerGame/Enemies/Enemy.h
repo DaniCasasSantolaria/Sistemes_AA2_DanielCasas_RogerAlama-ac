@@ -11,6 +11,7 @@ private:
 	int attack;
 	float movementCooldown = 2.0f;
 	float lastTimeMove = 0.0f;
+	bool isDead = false;
 	Node* node;
 	Object* object;
 	std::mutex _positionMutex;
@@ -23,7 +24,7 @@ public:
 	void Move(NodeMap* currentMap);
 	Json::Value Code() override;
 	void Decode(Json::Value json) override;
-	void Update(float dt);
+	void Update();
 	inline void Attack(PlayerDamageable* player) override { player->ReceiveDamage(attack); }
 	inline void ReceiveDamage(int damage) override { life -= damage; }
 	inline void SpawnEnemy(Vector2 position) { Node* node = new Node(position, new INodeContent(NodeContent::ENEMY)); }
