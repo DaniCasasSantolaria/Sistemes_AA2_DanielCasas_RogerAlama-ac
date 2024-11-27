@@ -76,9 +76,11 @@ void GameManager::Decode() {
 
         if (readedJson[2].isMember("grids")) {
             for (Json::Value value : readedJson[2]["grids"]) {
-                NodeMap* m = new NodeMap(Vector2(11,11), Vector2(0 ,0));
-                m->Decode(value["grid"]);
-                maps.push_back(m);
+                if (value.isMember("grid") && value["grid"].isArray()) {
+                    NodeMap* m = new NodeMap(Vector2(11, 11), Vector2(0, 0));
+                    m->Decode(value);
+                    maps.push_back(m);
+                }
             }
         }
 

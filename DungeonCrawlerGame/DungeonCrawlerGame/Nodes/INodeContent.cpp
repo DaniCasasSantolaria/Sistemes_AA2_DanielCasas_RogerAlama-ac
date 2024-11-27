@@ -8,7 +8,10 @@ Json::Value INodeContent::Code() {
 }
 
 void INodeContent::Decode(Json::Value json) {
-	_content = json["content"].asCString()[0];
+	if (json.isMember("content")) {
+		int content = json["content"].asInt();
+		_content = (char)content;
+	}
 }
 
 INodeContent::INodeContent(NodeContent content) {

@@ -49,7 +49,7 @@ Vector2 NodeMap::GetSize() {
 }
 
 Json::Value NodeMap::Code() {
-	Json::Value json(Json::objectValue); // Objeto principal
+	Json::Value json; // Objeto principal
 	json["offsetX"] = _offset.x;
 	json["offsetY"] = _offset.y;
 
@@ -58,56 +58,56 @@ Json::Value NodeMap::Code() {
 	json["sizeY"] = _size.y;
 	_sizeMutex.unlock();
 
-	Json::Value gridArray(Json::arrayValue); // Array de grillas
+	Json::Value gridArray(Json::arrayValue);
 	_gridMutex.lock();
 	for (NodeColumn* column : _grid) {
-		Json::Value nodesArray(Json::arrayValue); // Array de nodos dentro de la columna
+		Json::Value nodesArray(Json::arrayValue);
 		for (Node* node : *column) {
 			node->Lock();
-			nodesArray.append(node->Code()); // Agregar el nodo
+			nodesArray.append(node->Code());
 			node->Unlock();
 		}
 
-		Json::Value columnJson(Json::objectValue); // Objeto para la columna
-		columnJson["nodes"] = nodesArray;          // Asociar los nodos a "nodes"
-		gridArray.append(columnJson);              // Agregar la columna al grid
+		Json::Value columnJson; 
+		columnJson["nodes"] = nodesArray;          
+		gridArray.append(columnJson);              
 	}
 	_gridMutex.unlock();
 
-	json["grid"] = gridArray; // Asociar el grid al JSON principal
+	json["grid"] = gridArray;
 	return json;
 }
 
 void NodeMap::Decode(Json::Value json) {
 	_gridMutex.lock();
 
-	// Verificar si la clave "grid" existe y es un array
-		int gridHeight = json.size();
-		_grid.resize(gridHeight);
+	Json::Value gridArray = json["grid"];
+	int gridHeight = gridArray.size();
+	_grid.resize(gridHeight);
 
-		for (int i = 0; i < gridHeight; i++) {
-			Json::Value columnJson = json[i];
+	for (int i = 0; i < gridHeight; i++) {
+		Json::Value columnJson = gridArray[i];
 
-			Json::Value nodesArray = columnJson["nodes"];
-			int columnWidth = nodesArray.size();
+		Json::Value nodesArray = columnJson["nodes"];
+		int columnWidth = nodesArray.size();
 
-			NodeColumn* column = _grid[i];
-			column->resize(columnWidth);
 
-			for (int j = 0; j < columnWidth; j++) {
-				Json::Value nodeJson = nodesArray[j]["node"];
+		NodeColumn* column = _grid[i];
+		column->resize(columnWidth);
 
-				(*column)[j] = new Node(Vector2(0,0), new INodeContent(NodeContent::INVALID));
+		for (int j = 0; j < columnWidth; j++) {
+			Json::Value nodeJson = nodesArray[j];
 
-				Node* node = (*column)[j];
-				node->Lock();
-				node->Decode(nodeJson);
-				node->Unlock();
-			}
+			(*column)[j] = new Node(Vector2(0, 0), new INodeContent(NodeContent::INVALID));
+
+			Node* node = (*column)[j];
+			node->Lock();
+			node->Decode(nodeJson["node"]);
+			node->Unlock();
 		}
+	}
 	_gridMutex.unlock();
 
-	// Decodificar las propiedades generales del mapa
 	if (json.isMember("offsetX")) {
 		_offset.x = json["offsetX"].asInt();
 	}
