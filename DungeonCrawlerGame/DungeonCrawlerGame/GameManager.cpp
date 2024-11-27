@@ -2,26 +2,43 @@
 #include "../InputManager/InputManager.h"
 #include "Timer/Timer.h"
 #include "ConsoleControl/ConsoleControl.h"
+#include "Enemies/SpawnerEnemies.h"
+#include "Objects/SpawnerChests.h"
+#include "Objects/SpawnerObjects.h"
 
 GameManager::GameManager() {
     srand(time(NULL));
     int positionX = rand() % (9 - 1 + 1) + 1;
     int positionY = rand() % (9 - 1 + 1) + 1;
     player = new Player();
-    object = new Object(ObjectType::POTION, new Node(Vector2(positionX,positionY), new INodeContent(NodeContent::OBJECT)));
-    objects.push_back(object);
     for (int i = -10; i < 30; i += 10) {
         for (int j = -10; j < 30; j += 10)
             maps.push_back(new NodeMap(Vector2(11, 11), Vector2(j, i)));
     }
     currentMapNumber = 4;
     currentMap = maps[currentMapNumber];
+    enemies.push_back(SpawnerEnemies::SpawnEnemy(currentMap));
+    enemies.push_back(SpawnerEnemies::SpawnEnemy(currentMap));
 
-    enemies.push_back(spawnerEnemies->SpawnEnemy(currentMap));
+    objects.push_back(SpawnerObjects::SpawnObject(currentMap));
+    objects.push_back(SpawnerObjects::SpawnObject(currentMap));
+
+    chests.push_back(SpawnerChests::SpawnChest(currentMap));
+    chests.push_back(SpawnerChests::SpawnChest(currentMap));
 }
 void GameManager::PrintNewMap() {
     system("cls");
     currentMap->Draw();
+    player->Draw();
+    for (Object* object : objects) {
+        object->Draw();
+    }
+    for (Chest* c : chests) {
+        c->Draw();
+    }
+    for (Enemy* e : enemies) {
+        e->Draw();
+    }
     Print();
 }
 
@@ -56,13 +73,7 @@ void GameManager::CheckPortals() {
 }
 
 void GameManager::Print() {
-    player->Draw();
-    for (Object* object : objects) {
-        object->PrintObject();
-    }
-    for(Enemy* e : enemies){
-        e->Draw();
-    }
+
     CC::Lock();
     CC::SetPosition(currentMap->GetSize().x + 10, 0);
     std::cout << "Monedas: " << player->GetCoins();

@@ -15,5 +15,9 @@ public:
 		delete object;
 		delete node;
 	}
+	inline void SetObject(Object* object) { this->object = object; }
 	inline void ReceiveDamage() { life -= 1; };
+	inline void SetPosition(Vector2 position) { this->node->SetPosition(position); }
+	void Draw();
+	void SetNode(Node* node);
 };

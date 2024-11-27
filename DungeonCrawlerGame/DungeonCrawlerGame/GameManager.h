@@ -3,7 +3,8 @@
 #include "Enemies/Enemy.h"
 #include "Nodes/NodeMap.h"
 #include "Objects/Object.h"
-#include "Enemies/SpawnerEnemies.h"
+#include "Objects/Chest.h"
+#include "Timer/Timer.h"
 
 class GameManager {
 private:
@@ -15,7 +16,9 @@ private:
 	int currentMapNumber = 4;
 	std::vector<Object*> objects;
 	Object* object;
-	SpawnerEnemies* spawnerEnemies;
+	std::vector<Chest*> chests;
+	Chest* chest;
+	Timer timer;
 public:
 	GameManager();
 	void PrintNewMap();

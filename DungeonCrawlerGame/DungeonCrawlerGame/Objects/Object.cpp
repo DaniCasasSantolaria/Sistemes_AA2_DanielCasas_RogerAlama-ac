@@ -5,13 +5,14 @@
 #include <iostream>
 
 void Object::Draw() {
-	node->DrawContent();
-}
-
-void Object::PrintObject()
-{
 	CC::Lock();
 	CC::SetPosition(node->GetPosition().x, node->GetPosition().y);
-	node->GetContent()->Draw();
+	node->DrawContent();
 	CC::Unlock();
 }
+
+void Object::SetNode(Node* node)
+{
+	this->node = node;
+}
+

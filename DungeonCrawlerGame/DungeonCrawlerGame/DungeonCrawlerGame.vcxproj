@@ -139,6 +139,8 @@
     <ClCompile Include="Nodes\NodeMap.cpp" />
     <ClCompile Include="Objects\Chest.cpp" />
     <ClCompile Include="Objects\Object.cpp" />
+    <ClCompile Include="Objects\SpawnerChests.cpp" />
+    <ClCompile Include="Objects\SpawnerObjects.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Player\Weapons\Spear.cpp" />
     <ClCompile Include="Player\Weapons\Sword.cpp" />
