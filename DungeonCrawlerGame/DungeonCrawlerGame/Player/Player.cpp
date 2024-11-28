@@ -183,8 +183,7 @@ void Player::UpdatePosition(NodeMap* currentMap) {
 			CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
 			auxNode->DrawContent();
 			CC::Unlock();
-			//Cada node tiene INode content. Necesitamos acceder a dos nodos, el nodo de la posición previa y la actual.
-			//La previa ponerla en null y la siguiente en player
+
 		}
 
 		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
@@ -201,8 +200,6 @@ void Player::UpdatePosition(NodeMap* currentMap) {
 				CC::SetPosition(previousPosition.x, previousPosition.y);
 				auxNode->DrawContent();
 				CC::Unlock();
-				//Cada node tiene INode content. Necesitamos acceder a dos nodos, el nodo de la posición previa y la actual.
-				//La previa ponerla en null y la siguiente en player
 			}
 			});
 	}

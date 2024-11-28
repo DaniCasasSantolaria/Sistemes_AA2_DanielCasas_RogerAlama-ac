@@ -28,12 +28,13 @@ void Enemy::Move(NodeMap* currentMap) {
 		int randomX = rand() % ((1 - (-1) + 1) - 1);
 		int randomY = rand() % ((1 - (-1) + 1) - 1);
 		Vector2 pos{ randomX, randomY };
-		currentMap->SafePickNode(pos, [this, pos](Node* auxNode) {
+		currentMap->SafePickNode(pos, [this, pos, &canMove](Node* auxNode) {
 			if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
 				_positionMutex.lock();
 				node->SetPosition(Vector2(pos.x, pos.y));
 				_positionMutex.unlock();
 				Draw();
+				canMove = true;
 			}
 			});
 	}

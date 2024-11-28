@@ -3,7 +3,7 @@
 #include "../ICodable/ICodable.h"
 #include <mutex>
 
-enum class NodeContent { WALL, ENEMY, OBJECT, NOTHING, PLAYER, PORTAL, CHEST, INVALID};
+enum class NodeContent { WALL, ENEMY, OBJECT, NOTHING, PLAYER, PORTAL, CHEST, POTION, COIN, INVALID };
 
 class INodeContent : public ICodable {
 private:

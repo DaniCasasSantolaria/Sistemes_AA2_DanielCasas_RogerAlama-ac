@@ -15,6 +15,7 @@ public:
 	inline void ReceiveDamage() { life -= 1; };
 	inline void SetPosition(Vector2 position) { this->node->SetPosition(position); }
 	void Draw();
+	inline Node* GetNode() { return node; }
 	void SetNode(Node* node);
 	inline ~Chest() {
 		delete object;

@@ -30,6 +30,25 @@ GameManager::GameManager() {
 
     chests.push_back(SpawnerChests::SpawnChest(currentMap));
     chests.push_back(SpawnerChests::SpawnChest(currentMap));
+
+    for(Enemy* e : enemies){
+        Vector2 pos = e->GetPosition();
+        currentMap->SafePickNode(pos, [this, pos](Node* auxNode) {
+            auxNode->SetContent(NodeContent::ENEMY);
+			});
+    }
+    for(Object* o : objects){
+        Vector2 pos = o->GetNode()->GetPosition();
+        currentMap->SafePickNode(pos, [this, o](Node* auxNode) {
+            auxNode->SetContent(o->GetNode()->GetContent()->GetContent());
+			});
+    }
+    for(Chest* c : chests){
+        Vector2 pos = c->GetNode()->GetPosition();
+        currentMap->SafePickNode(pos, [this, c](Node* auxNode) {
+            auxNode->SetContent(c->GetNode()->GetContent()->GetContent());
+			});
+    }
 }
 
 Json::Value GameManager::CodeEnemies() {

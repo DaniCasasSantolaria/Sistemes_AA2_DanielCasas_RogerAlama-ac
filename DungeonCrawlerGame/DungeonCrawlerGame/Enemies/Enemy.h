@@ -18,7 +18,7 @@ private:
 public:
 	Enemy(int hp, int attck, Vector2 pos)
 		:
-		 life(hp), attack(attck) {
+		life(hp), attack(attck) {
 		node = new Node(pos, new INodeContent(NodeContent::ENEMY));
 	}
 	void Move(NodeMap* currentMap);
@@ -35,5 +35,11 @@ public:
 	inline ~Enemy() {
 		delete node;
 		delete object;
+	}
+	inline Vector2 GetPosition() {
+		_positionMutex.lock();
+		Vector2 pos = node->GetPosition();
+		_positionMutex.unlock();
+		return pos;
 	}
 };
