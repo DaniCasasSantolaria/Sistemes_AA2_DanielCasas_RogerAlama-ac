@@ -19,6 +19,9 @@ GameManager::GameManager() {
     }
     currentMapNumber = 4;
     currentMap = maps[currentMapNumber];
+    currentMap->SafePickNode(player->GetPosition(), [this](Node* auxNode){
+        auxNode->SetContent(NodeContent::PLAYER);
+    });
     enemies.push_back(SpawnerEnemies::SpawnEnemy(currentMap));
     enemies.push_back(SpawnerEnemies::SpawnEnemy(currentMap));
 
@@ -177,6 +180,7 @@ void GameManager::Start() {
 void GameManager::Update() {
     /*for (Enemy* e : enemies)
         e->Update();*/
+;
 }
 
 void GameManager::End() {

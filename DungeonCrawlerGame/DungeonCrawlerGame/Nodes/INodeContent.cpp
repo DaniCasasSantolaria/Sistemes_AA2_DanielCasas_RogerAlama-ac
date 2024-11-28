@@ -45,7 +45,9 @@ INodeContent::INodeContent(NodeContent content) {
 }
 
 void INodeContent::SetContent(NodeContent content) {
-	switch (content) {
+	nodeContent = content;
+
+	switch (nodeContent) {
 	case NodeContent::PLAYER:
 		_content = 'J';
 		break;

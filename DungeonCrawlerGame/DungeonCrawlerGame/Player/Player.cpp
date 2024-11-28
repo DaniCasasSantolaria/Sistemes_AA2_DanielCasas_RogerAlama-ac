@@ -156,33 +156,25 @@ void Player::UpdatePosition(NodeMap* currentMap) {
 	Vector2 nextPosition = previousPosition;
 	switch (movementState) {
 	case PlayerState::RIGHT:
-		nextPosition += Vector2(1, 0);
+		nextPosition.x++;
 		break;
 	case PlayerState::LEFT:
-		nextPosition += Vector2(-1, 0);
+		nextPosition.x--;
 		break;
 	case PlayerState::UP:
-		nextPosition += Vector2(0, 1);
+		nextPosition.y--;
 		break;
 	case PlayerState::DOWN:
-		nextPosition += Vector2(0, -1);
+		nextPosition.y++;
 		break;
 	default:
 		break;
 	}
-	currentMap->SafePickNode(previousPosition, [this, previousPosition](Node* auxNode) {
+	bool canMove = false;
+
+	currentMap->SafePickNode(nextPosition, [this, nextPosition, &canMove](Node* auxNode) {
 		if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
-			auxNode->SetContent(NodeContent::NOTHING);
-			CC::Lock();
-			CC::SetPosition(previousPosition.x, previousPosition.y);
-			auxNode->DrawContent();
-			CC::Unlock();
-			//Cada node tiene INode content. Necesitamos acceder a dos nodos, el nodo de la posición previa y la actual.
-			//La previa ponerla en null y la siguiente en player
-		}
-		});
-	currentMap->SafePickNode(nextPosition, [this, nextPosition](Node* auxNode) {
-		if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
+			canMove = true;
 			positionMutex.lock();
 			position->SetPosition(nextPosition);
 			positionMutex.unlock();
@@ -194,12 +186,27 @@ void Player::UpdatePosition(NodeMap* currentMap) {
 			//Cada node tiene INode content. Necesitamos acceder a dos nodos, el nodo de la posición previa y la actual.
 			//La previa ponerla en null y la siguiente en player
 		}
+
 		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
 			positionMutex.lock();
 			position->SetPosition(nextPosition);
 			positionMutex.unlock();
 		}
 		});
+	if (canMove) {
+		currentMap->SafePickNode(previousPosition, [this, previousPosition](Node* auxNode) {
+			if (auxNode->GetINodeContent()->GetContent() == NodeContent::PLAYER) {
+				auxNode->SetContent(NodeContent::NOTHING);
+				CC::Lock();
+				CC::SetPosition(previousPosition.x, previousPosition.y);
+				auxNode->DrawContent();
+				CC::Unlock();
+				//Cada node tiene INode content. Necesitamos acceder a dos nodos, el nodo de la posición previa y la actual.
+				//La previa ponerla en null y la siguiente en player
+			}
+			});
+	}
+	
 	movementState = PlayerState::IDLE;
 	CC::Lock();
 	CC::SetPosition(0, currentMap->GetSize().y);

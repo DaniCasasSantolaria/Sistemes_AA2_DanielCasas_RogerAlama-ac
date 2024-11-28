@@ -9,10 +9,9 @@ int main() {
 	gameManager->Start();
 	while (true) {
 		Timer::DelayExecute(15000, [gameManager]() {
-			gameManager->Code();
+			//gameManager->Code();
 			});
 		gameManager->Update();
 	}
-	gameManager->Code();
 	return 0;
 } 
