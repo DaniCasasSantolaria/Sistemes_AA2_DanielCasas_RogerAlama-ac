@@ -105,7 +105,7 @@ void GameManager::Decode() {
 
         if (readedJson[1].isMember("enemies")) {
             for (Json::Value value : readedJson[1]["enemies"]) {
-                Enemy* e = new Enemy(0, 0, Vector2(0,0));
+                Enemy* e = new Enemy(0, 0, Vector2(0,0), nullptr);
                 e->Decode(value["enemy"]);
                 enemies.push_back(e);
             }
@@ -146,27 +146,8 @@ void GameManager::PrintNewMap() {
 }
 
 void GameManager::CheckPortals() {
-    Vector2 pos = player->GetPosition();
-    int nextMap = 0;
-    switch (player->GetPlayerState()) {
-    case Player::PlayerState::DOWN:
-        nextMap = 3;
-        pos += Vector2(0, 1);
-        break;
-    case Player::PlayerState::LEFT:
-        nextMap = -1;
-        pos += Vector2(-1, 0);
-        break;
-    case Player::PlayerState::RIGHT:
-        nextMap = 1;
-        pos += Vector2(1, 0);
-        break;
-    case Player::PlayerState::UP:
-        nextMap = -3;
-        pos += Vector2(0, -1);
-        break;
-    }
-    currentMap->SafePickNode(pos, [this, nextMap](Node* node) {
+    int nextMap = player->CheckPortals();
+    currentMap->SafePickNode(player->GetPosition(), [this, nextMap](Node* node) {
         if (node->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
             if(currentMapNumber + nextMap >= 0 && currentMapNumber + nextMap < 9)
                 currentMap = maps[currentMapNumber + nextMap];
@@ -197,8 +178,12 @@ void GameManager::Start() {
 }
 
 void GameManager::Update() {
-    /*for (Enemy* e : enemies)
-        e->Update();*/
+    CheckPortals();
+    for (Enemy* e : enemies) {
+        Timer::DelayExecute(2000, [this, e]() {
+            e->Move(currentMap);
+        });
+    }
 ;
 }
 

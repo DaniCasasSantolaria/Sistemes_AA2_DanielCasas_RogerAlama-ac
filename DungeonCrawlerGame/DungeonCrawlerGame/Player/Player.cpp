@@ -185,12 +185,35 @@ void Player::UpdatePosition(NodeMap* currentMap) {
 			CC::Unlock();
 
 		}
-
-		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
+		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::COIN) {
+			canMove = true;
 			positionMutex.lock();
 			position->SetPosition(nextPosition);
 			positionMutex.unlock();
+			auxNode->SetContent(NodeContent::PLAYER);
+			CC::Lock();
+			CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
+			auxNode->DrawContent();
+			CC::Unlock();
+			TakeCoin();
 		}
+		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::POTION) {
+			canMove = true;
+			positionMutex.lock();
+			position->SetPosition(nextPosition);
+			positionMutex.unlock();
+			auxNode->SetContent(NodeContent::PLAYER);
+			CC::Lock();
+			CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
+			auxNode->DrawContent();
+			CC::Unlock();
+			TakePotion();
+		}
+		//else if (auxNode->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
+		//	positionMutex.lock();
+		//	position->SetPosition(nextPosition);
+		//	positionMutex.unlock();
+		//}
 		});
 	if (canMove) {
 		currentMap->SafePickNode(previousPosition, [this, previousPosition](Node* auxNode) {
@@ -200,6 +223,21 @@ void Player::UpdatePosition(NodeMap* currentMap) {
 				CC::SetPosition(previousPosition.x, previousPosition.y);
 				auxNode->DrawContent();
 				CC::Unlock();
+			}
+			});
+	}
+	else {
+		currentMap->SafePickNode(nextPosition, [this, nextPosition, previousPosition](Node* auxNode) {
+			if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
+				positionMutex.lock();
+				position->SetPosition(previousPosition);
+				positionMutex.unlock();
+				auxNode->SetContent(NodeContent::NOTHING);
+				CC::Lock();
+				CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
+				auxNode->DrawContent();
+				CC::Unlock();
+
 			}
 			});
 	}
@@ -216,15 +254,32 @@ void Player::ReceiveDamage(int damage) {
 	lifeMutex.unlock();
 }
 
-void Player::TakeObject(Object* object) {
-	if (object->GetType() == ObjectType::COIN) {
-		coinsMutex.lock();
-		coinCounter += rand() % ((5 - 3 + 1) + 3);
-		coinsMutex.unlock();
-	}
-	else if (object->GetType() == ObjectType::POTION) {
-		potionsCounter++;
-	}
+void Player::TakeCoin() {
+	coinsMutex.lock();
+	coinCounter++;
+	int coins = coinCounter;
+	coinsMutex.unlock();
+	CC::Lock();
+	CC::SetPosition(11 + 10, 0);
+	std::cout << "Monedas: " << coinCounter;
+	CC::Unlock();
+	CC::Lock();
+	CC::SetPosition(11, 11);
+	CC::Unlock();
+}
+
+void Player::TakePotion() {
+	potionsMutex.lock();
+	potionsCounter++;
+	int potions = potionsCounter;
+	potionsMutex.unlock();
+	CC::Lock();
+	CC::SetPosition(11 + 10, 0);
+	std::cout << "Pociones: " << potions;
+	CC::Unlock();
+	CC::Lock();
+	CC::SetPosition(11, 11);
+	CC::Unlock();
 }
 
 void Player::Heal(int lifeToHeal)
@@ -247,6 +302,32 @@ void Player::Heal(int lifeToHeal)
 		potionsCounter--;
 		potionsMutex.unlock();
 	}
+}
+
+int Player::CheckPortals() {
+	positionMutex.lock();
+	Vector2 pos = position->GetPosition();
+	positionMutex.unlock();
+	int nextMap = 0;
+	switch (movementState) {
+	case Player::PlayerState::DOWN:
+		nextMap = 3;
+		pos += Vector2(0, 1);
+		break;
+	case Player::PlayerState::LEFT:
+		nextMap = -1;
+		pos += Vector2(-1, 0);
+		break;
+	case Player::PlayerState::RIGHT:
+		nextMap = 1;
+		pos += Vector2(1, 0);
+		break;
+	case Player::PlayerState::UP:
+		nextMap = -3;
+		pos += Vector2(0, -1);
+		break;
+	}
+	return nextMap;
 }
 
 void Player::Draw() {

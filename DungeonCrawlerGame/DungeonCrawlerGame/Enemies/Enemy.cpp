@@ -1,7 +1,8 @@
 #include "Enemy.h"
 #include "../ConsoleControl/ConsoleControl.h"
 #include <thread>
-
+#include <ctime>
+#include "../Timer/Timer.h"
 Json::Value Enemy::Code() {
 	Json::Value json = Json::Value();
 	Json::Value jsonEnemy = Json::Value();
@@ -23,33 +24,44 @@ void Enemy::Decode(Json::Value json) {
 }
 
 void Enemy::Move(NodeMap* currentMap) {
-	bool canMove = false;
-	while(!canMove){
+	bool canMove = true;
+	positionMutex.lock();
+	Vector2 lastPos = node->GetPosition();
+	positionMutex.unlock();
+	while (canMove) {
 		int randomX = rand() % ((1 - (-1) + 1) - 1);
 		int randomY = rand() % ((1 - (-1) + 1) - 1);
 		Vector2 pos{ randomX, randomY };
-		currentMap->SafePickNode(pos, [this, pos, &canMove](Node* auxNode) {
+		Vector2 nextPos = node->GetPosition() + pos;
+		currentMap->SafePickNode(nextPos, [this, nextPos, &canMove](Node* auxNode) {
 			if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
-				_positionMutex.lock();
-				node->SetPosition(Vector2(pos.x, pos.y));
-				_positionMutex.unlock();
-				Draw();
+				positionMutex.lock();
+				node->SetPosition(Vector2(nextPos.x, nextPos.y));
+				positionMutex.unlock();
+				auxNode->SetContent(NodeContent::ENEMY);
+				auxNode->DrawContent();
 				canMove = true;
 			}
-			});
+			else {
+				canMove = false;
+			}
+		});
 	}
-
-}
-
-void Enemy::Update() {
-	/*std::thread move(&Enemy::Move, this);
-	move.detach();*/
+	currentMap->SafePickNode(lastPos, [this, lastPos](Node* auxNode) {
+		if (auxNode->GetINodeContent()->GetContent() == NodeContent::ENEMY) {
+			positionMutex.lock();
+			node->SetPosition(Vector2(lastPos.x, lastPos.y));
+			positionMutex.unlock();
+			auxNode->SetContent(NodeContent::NOTHING);
+			auxNode->DrawContent();
+		}
+	});
 }
 
 void Enemy::Draw() {
 	CC::Lock();
 	CC::SetPosition(node->GetPosition().x, node->GetPosition().y);
-	node->GetContent()->Draw();
+	node->DrawContent();
 	CC::Unlock();
 }
 

@@ -26,17 +26,20 @@ INodeContent::INodeContent(NodeContent content) {
 	case NodeContent::ENEMY:
 		_content = 'E';
 		break;
-	case NodeContent::OBJECT:
-		_content = 'o';
-		break;
 	case NodeContent::PORTAL:
-		_content = 'P';
+		_content = '#';
 		break;
 	case NodeContent::CHEST:
 		_content = '?';
 		break;
 	case NodeContent::NOTHING:
 		_content = ' ';
+		break;
+	case NodeContent::POTION:
+		_content = 'P';
+		break;
+	case NodeContent::COIN:
+		_content = 'C';
 		break;
 	default:
 		_content = '_';
@@ -57,9 +60,6 @@ void INodeContent::SetContent(NodeContent content) {
 	case NodeContent::ENEMY:
 		_content = 'E';
 		break;
-	case NodeContent::OBJECT:
-		_content = 'o';
-		break;
 	case NodeContent::PORTAL:
 		_content = 'P';
 		break;
@@ -68,6 +68,12 @@ void INodeContent::SetContent(NodeContent content) {
 		break;
 	case NodeContent::NOTHING:
 		_content = ' ';
+		break;
+	case NodeContent::POTION:
+		_content = 'P';
+		break;
+	case NodeContent::COIN:
+		_content = 'C';
 		break;
 	default:
 		return;

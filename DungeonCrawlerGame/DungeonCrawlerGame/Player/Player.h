@@ -47,7 +47,10 @@ public:
 	Vector2 GetPosition();
 	void UpdatePosition(NodeMap* currentMap);
 	void ReceiveDamage(int damage) override;
-	void TakeObject(Object* object);
+	void TakeCoin();
+	void TakePotion();
 	void Heal(int lifeToHeal) override;
+	int CheckPortals();
 	void Draw();
+	inline Weapon* GetWeapon() const {return equipedWeapon;} 
 };

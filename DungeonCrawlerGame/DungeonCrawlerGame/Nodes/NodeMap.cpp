@@ -20,8 +20,6 @@ NodeMap::NodeMap(Vector2 size, Vector2 offset) {
 	_size = size;
 	_offset = offset;
 
-	Vector2 randomNum1 = Vector2(rand() % ((8 - 1 + 1) + 1), rand() % ((8 - 1 + 1) + 1));
-	Vector2 randomNum2 = Vector2(rand() % ((8 - 1 + 1) + 1), rand() % ((8 - 1 + 1) + 1));
 	for (int x = 0; x < size.x; x++) {
 		NodeColumn* column = new NodeColumn();
 
@@ -32,8 +30,6 @@ NodeMap::NodeMap(Vector2 size, Vector2 offset) {
 				else
 				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::WALL)));
 			}
-			else if((x == randomNum1.x && y == randomNum1.y) || (x == randomNum2.x && y == randomNum2.y))
-				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::WALL)));
 			else
 				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::NOTHING)));
 		}

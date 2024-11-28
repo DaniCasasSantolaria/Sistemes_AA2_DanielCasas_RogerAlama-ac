@@ -12,6 +12,7 @@ public:
 		: object(object), node(node) {}
 	void DestroyChest(Player* player);
 	inline void SetObject(Object* object) { this->object = object; }
+	inline Object* GetObject() { return object; }
 	inline void ReceiveDamage() { life -= 1; };
 	inline void SetPosition(Vector2 position) { this->node->SetPosition(position); }
 	void Draw();

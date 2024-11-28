@@ -4,7 +4,7 @@
 int main() {
 	srand(time(NULL));
 	GameManager* gameManager = new GameManager();
-	gameManager->Decode();
+	//gameManager->Decode();
 	gameManager->PrintNewMap();
 	gameManager->Start();
 	while (true) {
