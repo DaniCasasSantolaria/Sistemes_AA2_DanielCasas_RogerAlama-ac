@@ -34,7 +34,7 @@ public:
 	Json::Value Code() override;
 	void Decode(Json::Value json) override;
 	void Attack(EnemyDamageable* enemy) override;
-	inline void ActivatePlayer() {IS.StartListen();}
+	void ActivatePlayer(NodeMap* currentMap);
 	inline void DesactivatePlayer() {IS.StopListen();}
 	void ReceiveMoreCoins(int amount);
 	int GetLifes();

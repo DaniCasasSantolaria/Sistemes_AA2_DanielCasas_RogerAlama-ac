@@ -8,8 +8,11 @@ int main() {
 	gameManager->PrintNewMap();
 	gameManager->Start();
 	while (true) {
+		Timer::DelayExecute(15000, [gameManager]() {
+			gameManager->Code();
+			});
 		gameManager->Update();
 	}
-	gameManager->Decode();
+	gameManager->Code();
 	return 0;
 } 

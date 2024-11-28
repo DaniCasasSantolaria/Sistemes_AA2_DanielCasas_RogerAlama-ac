@@ -170,15 +170,11 @@ void GameManager::Print() {
     CC::Unlock();
 }
 void GameManager::Start() {
-    player->ActivatePlayer();
+    player->ActivatePlayer(currentMap);
     Print();
 }
 
 void GameManager::Update() {
-    /*std::thread* move = new std::thread(Timer::DelayExecute, player->GetCooldownMovement(), [this]() {*/
-        player->UpdatePosition(currentMap);
-        /*});
-    move->detach();*/
     /*for (Enemy* e : enemies)
         e->Update();*/
 }
