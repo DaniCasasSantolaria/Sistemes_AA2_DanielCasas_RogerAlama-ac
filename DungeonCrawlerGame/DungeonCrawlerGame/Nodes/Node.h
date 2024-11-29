@@ -21,7 +21,7 @@ public:
 		return contentCasted;
 	}
 	void SetContent(NodeContent newContent);
-	void DrawContent();
+	void DrawContent(Vector2 offset);
 
 	inline void SetPosition(Vector2 position) { _position = position; }
 	inline Vector2 GetPosition() { return _position; }

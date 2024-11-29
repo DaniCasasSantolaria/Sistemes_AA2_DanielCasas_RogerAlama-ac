@@ -11,6 +11,7 @@ int main() {
 		Timer::DelayExecute(15000, [gameManager]() {
 			//gameManager->Code();
 			});
+		//std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 		gameManager->Update();
 	}
 	return 0;

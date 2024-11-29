@@ -18,7 +18,7 @@ Object* SpawnerObjects::SpawnObject(NodeMap* currentMap)
 				Node* node = new Node(randomPosition, new INodeContent(content));
 				Object* object = new Object(node);
 				auxNode->SetContent(content);
-				auxNode->DrawContent();
+				auxNode->DrawContent(randomPosition);
 				isEmpty = true;
 			}
 			});

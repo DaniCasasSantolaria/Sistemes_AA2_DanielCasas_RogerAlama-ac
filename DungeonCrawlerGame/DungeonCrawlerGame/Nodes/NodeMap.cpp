@@ -130,19 +130,16 @@ void NodeMap::Decode(Json::Value json) {
 }
 
 void NodeMap::Draw() {
-	CC::Lock();
-	CC::SetPosition(0, 0);
 	_gridMutex.lock();
 	for (NodeColumn* column : _grid) {
 		for (Node* node : *column) {
 			node->Lock();
-			node->DrawContent();
+			node->DrawContent(node->GetPosition());
 			node->Unlock();
 		}
 		std::cout << std::endl;
 	}
 	_gridMutex.unlock();
-	CC::Unlock();
 }
 
 void NodeMap::SafePickNode(Vector2 position, SafePick safePickAction) {

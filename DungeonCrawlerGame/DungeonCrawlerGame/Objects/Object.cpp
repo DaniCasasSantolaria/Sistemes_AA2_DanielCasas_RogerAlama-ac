@@ -5,10 +5,7 @@
 #include <iostream>
 
 void Object::Draw() {
-	CC::Lock();
-	CC::SetPosition(node->GetPosition().x, node->GetPosition().y);
-	node->DrawContent();
-	CC::Unlock();
+	node->DrawContent(node->GetPosition());
 }
 
 void Object::SetNode(Node* node)

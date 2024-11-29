@@ -40,13 +40,13 @@ void Node::SetContent(NodeContent newContent) {
 	_content->SetContent(newContent);
 }
 
-void Node::DrawContent() {
+void Node::DrawContent(Vector2 offset) {
 	if (_content == nullptr) {
 		std::cout << " ";
 		return;
 	}
 
-	_content->Draw();
+	_content->Draw(offset);
 }
 
 bool Node::IsEmpty() {

@@ -179,10 +179,7 @@ void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMa
 			position->SetPosition(nextPosition);
 			positionMutex.unlock();
 			auxNode->SetContent(NodeContent::PLAYER);
-			CC::Lock();
-			CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
-			auxNode->DrawContent();
-			CC::Unlock();
+			auxNode->DrawContent(nextPosition);
 
 		}
 		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::COIN) {
@@ -191,10 +188,7 @@ void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMa
 			position->SetPosition(nextPosition);
 			positionMutex.unlock();
 			auxNode->SetContent(NodeContent::PLAYER);
-			CC::Lock();
-			CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
-			auxNode->DrawContent();
-			CC::Unlock();
+			auxNode->DrawContent(nextPosition);
 			TakeCoin();
 		}
 		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::POTION) {
@@ -203,18 +197,24 @@ void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMa
 			position->SetPosition(nextPosition);
 			positionMutex.unlock();
 			auxNode->SetContent(NodeContent::PLAYER);
-			CC::Lock();
-			CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
-			auxNode->DrawContent();
-			CC::Unlock();
+			auxNode->DrawContent(nextPosition);
 			TakePotion();
 		}
 		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
-			int num = CheckPortals();
-			numMap += num;
+			int num = CheckPortals(*numMap);
+			*numMap += num;
 			nextMap = maps[*numMap];
+			canMove = true;
 		}
 	});
+	if (canMove) {
+		currentMap->SafePickNode(previousPosition, [this, previousPosition](Node* auxNode) {
+			if (auxNode->GetINodeContent()->GetContent() == NodeContent::PLAYER) {
+				auxNode->SetContent(NodeContent::NOTHING);
+				auxNode->DrawContent(previousPosition);
+			}
+		});
+	}
 	if (nextMap != nullptr) {
 		currentMap = nextMap;
 		Vector2 newPosPlayer = Vector2(currentMap->GetSize().x / 2, currentMap->GetSize().y / 2);
@@ -223,35 +223,10 @@ void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMa
 			positionMutex.lock();
 			position->SetPosition(newPosPlayer);
 			positionMutex.unlock();
-		});
+			});
 		system("cls");
 		currentMap->Draw();
-	}
-	if (canMove) {
-		currentMap->SafePickNode(previousPosition, [this, previousPosition](Node* auxNode) {
-			if (auxNode->GetINodeContent()->GetContent() == NodeContent::PLAYER) {
-				auxNode->SetContent(NodeContent::NOTHING);
-				CC::Lock();
-				CC::SetPosition(previousPosition.x, previousPosition.y);
-				auxNode->DrawContent();
-				CC::Unlock();
-			}
-			});
-	}
-	else {
-		currentMap->SafePickNode(nextPosition, [this, nextPosition, previousPosition](Node* auxNode) {
-			if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
-				positionMutex.lock();
-				position->SetPosition(previousPosition);
-				positionMutex.unlock();
-				auxNode->SetContent(NodeContent::NOTHING);
-				CC::Lock();
-				CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
-				auxNode->DrawContent();
-				CC::Unlock();
-
-			}
-			});
+		//FALTA QUE IMPRIMEIXI OBJECTES I ENEMICS. ES FA AMB EL PRINTNEWMAP()
 	}
 	
 	movementState = PlayerState::IDLE;
@@ -316,35 +291,40 @@ void Player::Heal(int lifeToHeal)
 	}
 }
 
-int Player::CheckPortals() {
+int Player::CheckPortals(int currentMap) {
 	positionMutex.lock();
 	Vector2 pos = position->GetPosition();
 	positionMutex.unlock();
 	int nextMap = 0;
 	switch (movementState) {
 	case Player::PlayerState::DOWN:
-		nextMap = 3;
-		pos.y++;
+		if (currentMap < 6) {
+			nextMap = 3;
+			pos.y++;
+		}
 		break;
 	case Player::PlayerState::LEFT:
-		nextMap = -1;
-		pos.x--;
+		if (currentMap != 0 && currentMap != 3 && currentMap != 6) {
+			nextMap = -1;
+			pos.x--;
+		}
 		break;
 	case Player::PlayerState::RIGHT:
-		nextMap = 1;
-		pos.x++;
+		if (currentMap != 2 && currentMap != 5 && currentMap != 8) {
+			nextMap = 1;
+			pos.x++;
+		}
 		break;
 	case Player::PlayerState::UP:
-		nextMap = -3;
-		pos.y--;
+		if (currentMap > 2) {
+			nextMap = -3;
+			pos.y--;
+		}
 		break;
 	}
 	return nextMap;
 }
 
 void Player::Draw() {
-	CC::Lock();
-	CC::SetPosition(position->GetPosition().x, position->GetPosition().y);
-	position->GetContent()->Draw();
-	CC::Unlock();
+	position->GetContent()->Draw(position->GetPosition());
 }

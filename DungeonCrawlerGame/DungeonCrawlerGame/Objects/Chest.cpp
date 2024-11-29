@@ -8,15 +8,10 @@ void Chest::DestroyChest(Player* player) {
 		player->ReceiveMoreCoins(rand() % ((15 - 7 + 1) + 7));
 }
 
-void Chest::Draw()
-{
-	CC::Lock();
-	CC::SetPosition(node->GetPosition().x, node->GetPosition().y);
-	node->DrawContent();
-	CC::Unlock();
+void Chest::Draw() {
+	node->DrawContent(node->GetPosition());
 }
 
-void Chest::SetNode(Node* node)
-{
+void Chest::SetNode(Node* node) {
 	this->node = node;
 }

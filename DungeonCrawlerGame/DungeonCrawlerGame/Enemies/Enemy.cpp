@@ -24,13 +24,13 @@ void Enemy::Decode(Json::Value json) {
 }
 
 void Enemy::Move(NodeMap* currentMap) {
-	bool canMove = true;
+	bool canMove = false;
 	positionMutex.lock();
 	Vector2 lastPos = node->GetPosition();
 	positionMutex.unlock();
-	while (canMove) {
-		int randomX = rand() % 3 - 1;
-		int randomY = rand() % 3 - 1;
+	while (!canMove) {
+		int randomX = rand() % ((1 - (-1) + 1) + (-1));
+		int randomY = rand() % ((1 - (-1) + 1) + (-1));
 
 		Vector2 pos{ randomX, randomY };
 		Vector2 nextPos = lastPos + pos;
@@ -41,33 +41,26 @@ void Enemy::Move(NodeMap* currentMap) {
 				node->SetPosition(nextPos);
 				positionMutex.unlock();
 				auxNode->SetContent(NodeContent::ENEMY);
-				auxNode->DrawContent();
-				canMove = false;
-			}
-			else {
+				auxNode->DrawContent(nextPos);
 				canMove = true;
-
 			}
 		});
-		if (!canMove) {
+		if (canMove) {
 			currentMap->SafePickNode(lastPos, [this, lastPos](Node* auxNode) {
 				if (auxNode->GetINodeContent()->GetContent() == NodeContent::ENEMY) {
-					positionMutex.lock();
-					node->SetPosition(lastPos);
-					positionMutex.unlock();
 					auxNode->SetContent(NodeContent::NOTHING);
-					auxNode->DrawContent();
+					auxNode->DrawContent(lastPos);
 				}
-				});
+			});
 		}
-		lastPos = nextPos;}
+	;}
+	CC::Lock();
+	CC::SetPosition(0, currentMap->GetSize().y);
+	CC::Unlock();
 }
 
 void Enemy::Draw() {
-	CC::Lock();
-	CC::SetPosition(node->GetPosition().x, node->GetPosition().y);
-	node->DrawContent();
-	CC::Unlock();
+	node->DrawContent(node->GetPosition());
 }
 
 Object* Enemy::DropObject() {

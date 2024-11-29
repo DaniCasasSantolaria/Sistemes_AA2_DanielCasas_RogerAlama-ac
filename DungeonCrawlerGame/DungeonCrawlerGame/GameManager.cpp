@@ -158,7 +158,7 @@ void GameManager::Print() {
     /*std::cout << "Pociones: " << player->GetWeapon();*/ //Falta hacer un enum per poder fer el cout
     CC::Unlock();
     CC::Lock();
-    CC::SetPosition(currentMap->GetSize().x, currentMap->GetSize().y);
+    CC::SetPosition(0, currentMap->GetSize().y);
     CC::Unlock();
 }
 void GameManager::Start() {

@@ -41,7 +41,7 @@ public:
 	int GetCoins();
 	int GetAmountPotions();
 	inline void RecievePotion() { potionsCounter++; }
-	inline int GetCooldownMovement() const { return cooldown; }
+	inline float GetCooldownMovement() const { return cooldown; }
 	inline PlayerState GetPlayerState() const { return movementState; }
 	inline void SetMovementState(PlayerState m) { movementState = m; }
 	Vector2 GetPosition();
@@ -50,7 +50,7 @@ public:
 	void TakeCoin();
 	void TakePotion();
 	void Heal(int lifeToHeal) override;
-	int CheckPortals();
+	int CheckPortals(int currentMap);
 	void Draw();
 	inline Weapon* GetWeapon() const {return equipedWeapon;} 
 };
