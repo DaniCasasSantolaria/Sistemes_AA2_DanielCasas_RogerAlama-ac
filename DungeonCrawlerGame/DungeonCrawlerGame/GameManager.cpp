@@ -7,9 +7,10 @@
 #include "Objects/SpawnerObjects.h"
 #include <fstream>
 #include <iostream>
-
+//Clase mapamundi que tingui mapes, vector enemies i objects, funcio printmap (nodemap) que pasan-li el currentmap ho imprimeixi
+// Vector de mapas en clase world en comptes de game manager
 GameManager::GameManager() {
-    srand(time(NULL));
+   /* srand(time(NULL));
     int positionX = rand() % (9 - 1 + 1) + 1;
     int positionY = rand() % (9 - 1 + 1) + 1;
     player = new Player();
@@ -48,13 +49,15 @@ GameManager::GameManager() {
         currentMap->SafePickNode(pos, [this, c](Node* auxNode) {
             auxNode->SetContent(c->GetNode()->GetContent()->GetContent());
 			});
-    }
+    }*/
+    worldMap = new WorldMap();
+    worldMap->SetMap();
 }
 
 Json::Value GameManager::CodeEnemies() {
     Json::Value json = Json::Value();
     Json::Value enemiesArray(Json::arrayValue);
-    for (Enemy* enemy : enemies)
+    for (Enemy* enemy : worldMap->GetEnemies())
         enemiesArray.append(enemy->Code());
     json["enemies"] = enemiesArray;
     return json;
@@ -63,7 +66,7 @@ Json::Value GameManager::CodeEnemies() {
 Json::Value GameManager::CodeMaps() {
     Json::Value json = Json::Value();
     Json::Value mapsArray(Json::arrayValue);
-    for (NodeMap* map : maps)
+    for (NodeMap* map : worldMap->GetMaps())
         mapsArray.append(map->Code());
     json["grids"] = mapsArray;
     return json;
@@ -71,10 +74,10 @@ Json::Value GameManager::CodeMaps() {
 
 void GameManager::Code() {
     Json::Value jsonArray = Json::Value(Json::arrayValue);
-    jsonArray.append(player->Code());
+    jsonArray.append(worldMap->GetPlayer()->Code());
     jsonArray.append(CodeEnemies());
     jsonArray.append(CodeMaps());
-    jsonArray.append(currentMap->Code());
+    jsonArray.append(worldMap->GetCurrentMap()->Code());
 
     try {
         std::ofstream jsonWriteFile = std::ofstream("DungeonCrawlerGame.json", std::ifstream::binary);
@@ -107,7 +110,7 @@ void GameManager::Decode() {
             for (Json::Value value : readedJson[1]["enemies"]) {
                 Enemy* e = new Enemy(0, 0, Vector2(0,0), nullptr);
                 e->Decode(value["enemy"]);
-                enemies.push_back(e);
+                worldMap->GetEnemies().push_back(e);
             }
         }
 
@@ -116,13 +119,13 @@ void GameManager::Decode() {
                 if (value.isMember("grid") && value["grid"].isArray()) {
                     NodeMap* m = new NodeMap(Vector2(11, 11), Vector2(0, 0));
                     m->Decode(value);
-                    maps.push_back(m);
+                    worldMap->GetMaps().push_back(m);
                 }
             }
         }
 
         if (readedJson[3].isMember("currentMap")) {
-            currentMap->Decode(readedJson["currentMap"]);
+            worldMap->GetCurrentMap()->Decode(readedJson["currentMap"]);
         }
 
         jsonReadFile.close();
@@ -131,15 +134,15 @@ void GameManager::Decode() {
 
 void GameManager::PrintNewMap() {
     system("cls");
-    currentMap->Draw();
+    worldMap->GetCurrentMap()->Draw();
     player->Draw();
-    for (Object* object : objects) {
+    for (Object* object : worldMap->GetObjects()) {
         object->Draw();
     }
-    for (Chest* c : chests) {
+    for (Chest* c : worldMap->GetChests()) {
         c->Draw();
     }
-    for (Enemy* e : enemies) {
+    for (Enemy* e : worldMap->GetEnemies()) {
         e->Draw();
     }
     Print();
@@ -148,28 +151,28 @@ void GameManager::PrintNewMap() {
 void GameManager::Print() {
 
     CC::Lock();
-    CC::SetPosition(currentMap->GetSize().x + 10, 0);
+    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x + 10, 0);
     std::cout << "Monedas: " << player->GetCoins();
-    CC::SetPosition(currentMap->GetSize().x + 10, 1);
+    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x + 10, 1);
     std::cout << "Vidas: " << player->GetLifes();
-    CC::SetPosition(currentMap->GetSize().x + 10, 2);
+    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x + 10, 2);
     std::cout << "Pociones: " << player->GetAmountPotions();
-    CC::SetPosition(currentMap->GetSize().x + 10, 3);
+    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x + 10, 3);
     /*std::cout << "Pociones: " << player->GetWeapon();*/ //Falta hacer un enum per poder fer el cout
     CC::Unlock();
     CC::Lock();
-    CC::SetPosition(0, currentMap->GetSize().y);
+    CC::SetPosition(0, worldMap->GetCurrentMap()->GetSize().y);
     CC::Unlock();
 }
 void GameManager::Start() {
-    player->ActivatePlayer(currentMap, &currentMapNumber, maps);
+    player->ActivatePlayer(worldMap->GetCurrentMap(), &currentMapNumber, worldMap->GetMaps());
     Print();
 }
 
 void GameManager::Update() {
-    for (Enemy* e : enemies) {
+    for (Enemy* e : worldMap->GetEnemies()) {
         Timer::DelayExecute(1000, [this, e]() {
-            e->Move(currentMap);
+            e->Move(worldMap->GetCurrentMap());
         });
     }
 ;
@@ -181,13 +184,13 @@ void GameManager::End() {
 
 GameManager::~GameManager() {
     delete player;
-    for (Enemy* e : enemies)
+    for (Enemy* e : worldMap->GetEnemies())
         delete e;
-    for (NodeMap* map : maps)
+    for (NodeMap* map : worldMap->GetMaps())
         delete map;
-    delete currentMap;
-    for (Object* o : objects)
+    delete  worldMap->GetCurrentMap();
+    for (Object* o : worldMap->GetObjects())
         delete o;
-    for (Chest* c : chests)
+    for (Chest* c : worldMap->GetChests())
         delete c;
 }

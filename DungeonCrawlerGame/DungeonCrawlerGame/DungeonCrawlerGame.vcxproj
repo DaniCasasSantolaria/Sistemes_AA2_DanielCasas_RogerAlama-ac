@@ -148,6 +148,7 @@
     <ClCompile Include="Timer\Timer.cpp" />
     <ClCompile Include="Player\Weapons\Weapon.cpp" />
     <ClCompile Include="Vector2\Vector2.cpp" />
+    <ClCompile Include="Nodes\WorldMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleControl\ConsoleControl.h" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Player\Weapons\Weapon.h" />
     <ClInclude Include="Timer\Timer.h" />
     <ClInclude Include="Vector2\Vector2.h" />
+    <ClInclude Include="Nodes\WorldMap.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="NewFile.txt" />

@@ -6,16 +6,19 @@
 #include "Objects/Object.h"
 #include "Objects/Chest.h"
 #include "Timer/Timer.h"
+#include "Nodes/WorldMap.h"
 
 class GameManager {
 private:
 	Player* player;
-	std::vector<Enemy*> enemies;
-	std::vector<NodeMap*> maps;
-	NodeMap* currentMap;
+	WorldMap* worldMap;
+
+	//NodeMap* currentMap;
+	//std::vector<NodeMap*> maps;
+	//std::vector<Object*> objects;
+	//std::vector<Enemy*> enemies;
+	//std::vector<Chest*> chests;
 	int currentMapNumber = 4;
-	std::vector<Object*> objects;
-	std::vector<Chest*> chests;
 public:
 	GameManager();
 	Json::Value CodeEnemies();
