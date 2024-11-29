@@ -168,7 +168,7 @@ void GameManager::Start() {
 
 void GameManager::Update() {
     for (Enemy* e : enemies) {
-        Timer::DelayExecute(2000, [this, e]() {
+        Timer::DelayExecute(1000, [this, e]() {
             e->Move(currentMap);
         });
     }

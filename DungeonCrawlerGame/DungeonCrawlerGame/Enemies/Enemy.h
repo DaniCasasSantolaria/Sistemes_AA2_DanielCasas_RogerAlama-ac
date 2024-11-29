@@ -52,4 +52,5 @@ public:
 		positionMutex.unlock();
 		return pos;
 	}
+
 };

@@ -37,4 +37,5 @@ public:
 	void SafePickNode(Vector2 position, SafePick safePickAction);
 	void SafeMultiPickNode(std::list<Vector2> position, SafeMultiPick safeMultiPickAction);
 	~NodeMap();
+
 };

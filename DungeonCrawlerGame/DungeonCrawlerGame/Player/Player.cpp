@@ -324,19 +324,19 @@ int Player::CheckPortals() {
 	switch (movementState) {
 	case Player::PlayerState::DOWN:
 		nextMap = 3;
-		pos += Vector2(0, 1);
+		pos.y++;
 		break;
 	case Player::PlayerState::LEFT:
 		nextMap = -1;
-		pos += Vector2(-1, 0);
+		pos.x--;
 		break;
 	case Player::PlayerState::RIGHT:
 		nextMap = 1;
-		pos += Vector2(1, 0);
+		pos.x++;
 		break;
 	case Player::PlayerState::UP:
 		nextMap = -3;
-		pos += Vector2(0, -1);
+		pos.y--;
 		break;
 	}
 	return nextMap;
