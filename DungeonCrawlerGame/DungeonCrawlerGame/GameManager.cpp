@@ -145,17 +145,6 @@ void GameManager::PrintNewMap() {
     Print();
 }
 
-void GameManager::CheckPortals() {
-    int nextMap = player->CheckPortals();
-    currentMap->SafePickNode(player->GetPosition(), [this, nextMap](Node* node) {
-        if (node->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
-            if(currentMapNumber + nextMap >= 0 && currentMapNumber + nextMap < 9)
-                currentMap = maps[currentMapNumber + nextMap];
-            //Falta asignar els portals correctament als mapas
-        }
-        });
-}
-
 void GameManager::Print() {
 
     CC::Lock();
@@ -173,12 +162,11 @@ void GameManager::Print() {
     CC::Unlock();
 }
 void GameManager::Start() {
-    player->ActivatePlayer(currentMap);
+    player->ActivatePlayer(currentMap, &currentMapNumber, maps);
     Print();
 }
 
 void GameManager::Update() {
-    CheckPortals();
     for (Enemy* e : enemies) {
         Timer::DelayExecute(2000, [this, e]() {
             e->Move(currentMap);

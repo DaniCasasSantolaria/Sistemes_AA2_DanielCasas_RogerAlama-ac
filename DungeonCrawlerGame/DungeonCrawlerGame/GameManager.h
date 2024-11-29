@@ -23,7 +23,6 @@ public:
 	void Code();
 	void Decode();
 	void PrintNewMap();
-	void CheckPortals();
 	void Print();
 	void Start();
 	void Update();

@@ -85,25 +85,25 @@ void Player::Attack(EnemyDamageable* enemy) {
 	enemy->ReceiveDamage(equipedWeapon->Attack());
 }
 
-void Player::ActivatePlayer(NodeMap* currentMap) {
-	InputSystem::KeyBinding* kb1 = IS.AddListener(K_UP, [this, currentMap]() {
+void Player::ActivatePlayer(NodeMap* currentMap, int* numMap, std::vector<NodeMap*>maps) {
+	InputSystem::KeyBinding* kb1 = IS.AddListener(K_UP, [this, currentMap, numMap, maps]() {
 		SetMovementState(PlayerState::UP);
-		UpdatePosition(currentMap);
+		UpdatePosition(currentMap, numMap, maps);
 		});
 
-	InputSystem::KeyBinding* kb2 = IS.AddListener(K_LEFT, [this, currentMap]() {
+	InputSystem::KeyBinding* kb2 = IS.AddListener(K_LEFT, [this, currentMap, numMap, maps]() {
 		SetMovementState(PlayerState::LEFT);
-		UpdatePosition(currentMap);
+		UpdatePosition(currentMap, numMap, maps);
 		});
 
-	InputSystem::KeyBinding* kb3 = IS.AddListener(K_DOWN, [this, currentMap]() {
+	InputSystem::KeyBinding* kb3 = IS.AddListener(K_DOWN, [this, currentMap, numMap, maps]() {
 		SetMovementState(PlayerState::DOWN);
-		UpdatePosition(currentMap);
+		UpdatePosition(currentMap, numMap, maps);
 		});
 
-	InputSystem::KeyBinding* kb4 = IS.AddListener(K_RIGHT, [this, currentMap]() {
+	InputSystem::KeyBinding* kb4 = IS.AddListener(K_RIGHT, [this, currentMap, numMap, maps]() {
 		SetMovementState(PlayerState::RIGHT);
-		UpdatePosition(currentMap);
+		UpdatePosition(currentMap, numMap, maps);
 		});
 	InputSystem::KeyBinding* kb5 = IS.AddListener(K_1, [this, currentMap]() {
 		Heal(15);
@@ -149,7 +149,7 @@ Vector2 Player::GetPosition() {
 	return auxPos;
 }
 
-void Player::UpdatePosition(NodeMap* currentMap) {
+void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMap*> maps) {
 	positionMutex.lock();
 	Vector2 previousPosition = position->GetPosition();
 	positionMutex.unlock();
@@ -171,8 +171,8 @@ void Player::UpdatePosition(NodeMap* currentMap) {
 		break;
 	}
 	bool canMove = false;
-
-	currentMap->SafePickNode(nextPosition, [this, nextPosition, &canMove](Node* auxNode) {
+	NodeMap* nextMap = nullptr;
+	currentMap->SafePickNode(nextPosition, [this, nextPosition, &canMove, &numMap, maps, &nextMap ](Node* auxNode) {
 		if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
 			canMove = true;
 			positionMutex.lock();
@@ -209,12 +209,24 @@ void Player::UpdatePosition(NodeMap* currentMap) {
 			CC::Unlock();
 			TakePotion();
 		}
-		//else if (auxNode->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
-		//	positionMutex.lock();
-		//	position->SetPosition(nextPosition);
-		//	positionMutex.unlock();
-		//}
+		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
+			int num = CheckPortals();
+			numMap += num;
+			nextMap = maps[*numMap];
+		}
+	});
+	if (nextMap != nullptr) {
+		currentMap = nextMap;
+		Vector2 newPosPlayer = Vector2(currentMap->GetSize().x / 2, currentMap->GetSize().y / 2);
+		currentMap->SafePickNode(newPosPlayer, [this, newPosPlayer](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PLAYER);
+			positionMutex.lock();
+			position->SetPosition(newPosPlayer);
+			positionMutex.unlock();
 		});
+		system("cls");
+		currentMap->Draw();
+	}
 	if (canMove) {
 		currentMap->SafePickNode(previousPosition, [this, previousPosition](Node* auxNode) {
 			if (auxNode->GetINodeContent()->GetContent() == NodeContent::PLAYER) {

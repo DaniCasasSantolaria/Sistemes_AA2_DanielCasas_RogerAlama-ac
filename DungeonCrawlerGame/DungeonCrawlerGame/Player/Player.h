@@ -34,7 +34,7 @@ public:
 	Json::Value Code() override;
 	void Decode(Json::Value json) override;
 	void Attack(EnemyDamageable* enemy) override;
-	void ActivatePlayer(NodeMap* currentMap);
+	void ActivatePlayer(NodeMap* currentMap, int* numMap, std::vector<NodeMap*>maps);
 	inline void DesactivatePlayer() {IS.StopListen();}
 	void ReceiveMoreCoins(int amount);
 	int GetLifes();
@@ -45,7 +45,7 @@ public:
 	inline PlayerState GetPlayerState() const { return movementState; }
 	inline void SetMovementState(PlayerState m) { movementState = m; }
 	Vector2 GetPosition();
-	void UpdatePosition(NodeMap* currentMap);
+	void UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMap*> maps);
 	void ReceiveDamage(int damage) override;
 	void TakeCoin();
 	void TakePotion();
