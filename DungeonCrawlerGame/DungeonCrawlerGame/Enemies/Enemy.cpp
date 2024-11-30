@@ -1,7 +1,8 @@
 #include "Enemy.h"
 #include "../ConsoleControl/ConsoleControl.h"
 #include <thread>
-
+#include <ctime>
+#include "../Timer/Timer.h"
 Json::Value Enemy::Code() {
 	Json::Value json = Json::Value();
 	Json::Value jsonEnemy = Json::Value();
@@ -22,34 +23,48 @@ void Enemy::Decode(Json::Value json) {
 	isDead = json["isDead"].asBool();
 }
 
-void Enemy::Move(NodeMap* currentMap) {
+void Enemy::Move(NodeMap* currentMap, int currentMapNumber) {
 	bool canMove = false;
-	while(!canMove){
-		int randomX = rand() % ((1 - (-1) + 1) - 1);
-		int randomY = rand() % ((1 - (-1) + 1) - 1);
+	positionMutex.lock();
+	Vector2 lastPos = node->GetPosition();
+	positionMutex.unlock();
+	int maxAttempts = 20;
+	while (!canMove && maxAttempts > 0) {
+		int randomX = (rand() % 3) - 1;
+		int randomY = (rand() % 3) - 1;
+
 		Vector2 pos{ randomX, randomY };
-		currentMap->SafePickNode(pos, [this, pos](Node* auxNode) {
+		Vector2 nextPos = Vector2(lastPos.x + pos.x, lastPos.y + pos.y);
+	
+		currentMap->SafePickNode(nextPos, [this, nextPos, &canMove, currentMapNumber](Node* auxNode) {
 			if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
-				_positionMutex.lock();
-				node->SetPosition(Vector2(pos.x, pos.y));
-				_positionMutex.unlock();
-				Draw();
+				positionMutex.lock();
+				node->SetPosition(nextPos);
+				positionMutex.unlock();
+				auxNode->SetContent(NodeContent::ENEMY);
+				if(currentMapNumber == map)
+					auxNode->DrawContent(nextPos);
+				canMove = true;
 			}
+		});
+		if (canMove) {
+			currentMap->SafePickNode(lastPos, [this, lastPos, currentMapNumber](Node* auxNode) {
+				if (auxNode->GetINodeContent()->GetContent() == NodeContent::ENEMY) {
+					auxNode->SetContent(NodeContent::NOTHING);
+					if (currentMapNumber == map)
+						auxNode->DrawContent(lastPos);
+				}
 			});
-	}
-
-}
-
-void Enemy::Update() {
-	/*std::thread move(&Enemy::Move, this);
-	move.detach();*/
+		}
+		maxAttempts--;
+	;}
+	CC::Lock();
+	CC::SetPosition(0, currentMap->GetSize().y);
+	CC::Unlock();
 }
 
 void Enemy::Draw() {
-	CC::Lock();
-	CC::SetPosition(node->GetPosition().x, node->GetPosition().y);
-	node->GetContent()->Draw();
-	CC::Unlock();
+	node->DrawContent(node->GetPosition());
 }
 
 Object* Enemy::DropObject() {

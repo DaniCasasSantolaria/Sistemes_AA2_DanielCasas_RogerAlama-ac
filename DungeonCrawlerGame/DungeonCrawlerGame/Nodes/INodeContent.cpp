@@ -1,4 +1,5 @@
 #include "INodeContent.h"
+#include "../ConsoleControl/ConsoleControl.h"
 #include <iostream>
 
 Json::Value INodeContent::Code() {
@@ -26,17 +27,20 @@ INodeContent::INodeContent(NodeContent content) {
 	case NodeContent::ENEMY:
 		_content = 'E';
 		break;
-	case NodeContent::OBJECT:
-		_content = 'o';
-		break;
 	case NodeContent::PORTAL:
-		_content = 'P';
+		_content = '#';
 		break;
 	case NodeContent::CHEST:
 		_content = '?';
 		break;
 	case NodeContent::NOTHING:
 		_content = ' ';
+		break;
+	case NodeContent::POTION:
+		_content = 'P';
+		break;
+	case NodeContent::COIN:
+		_content = 'C';
 		break;
 	default:
 		_content = '_';
@@ -46,7 +50,6 @@ INodeContent::INodeContent(NodeContent content) {
 
 void INodeContent::SetContent(NodeContent content) {
 	nodeContent = content;
-
 	switch (nodeContent) {
 	case NodeContent::PLAYER:
 		_content = 'J';
@@ -57,9 +60,6 @@ void INodeContent::SetContent(NodeContent content) {
 	case NodeContent::ENEMY:
 		_content = 'E';
 		break;
-	case NodeContent::OBJECT:
-		_content = 'o';
-		break;
 	case NodeContent::PORTAL:
 		_content = 'P';
 		break;
@@ -69,11 +69,50 @@ void INodeContent::SetContent(NodeContent content) {
 	case NodeContent::NOTHING:
 		_content = ' ';
 		break;
+	case NodeContent::POTION:
+		_content = 'P';
+		break;
+	case NodeContent::COIN:
+		_content = 'C';
+		break;
 	default:
 		return;
 	}
 }
 
-void INodeContent::Draw() {
+void INodeContent::Draw(Vector2 offset) {
+	CC::Lock();
+	CC::SetPosition(offset.x, offset.y);
+	switch (nodeContent) {
+	case NodeContent::PLAYER:
+		CC::SetColor(CC::CYAN);
+		break;
+	case NodeContent::WALL:
+		CC::SetColor(CC::DARKGREEN);
+		break;
+	case NodeContent::ENEMY:
+		CC::SetColor(CC::RED);
+		break;
+	case NodeContent::PORTAL:
+		CC::SetColor(CC::DARKMAGENTA);
+		break;
+	case NodeContent::CHEST:
+		CC::SetColor(CC::LIGHTGREY);
+		break;
+	case NodeContent::NOTHING:
+		CC::SetColor(CC::WHITE);
+		break;
+	case NodeContent::POTION:
+		CC::SetColor(CC::BLUE);
+		break;
+	case NodeContent::COIN:
+		CC::SetColor(CC::YELLOW);
+		break;
+	default:
+		CC::SetColor(CC::WHITE);
+		break;
+	}
 	std::cout << _content;
+	CC::SetColor(CC::WHITE);
+	CC::Unlock();
 }

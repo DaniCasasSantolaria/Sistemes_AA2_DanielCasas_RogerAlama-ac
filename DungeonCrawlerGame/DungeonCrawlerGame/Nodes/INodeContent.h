@@ -3,7 +3,7 @@
 #include "../ICodable/ICodable.h"
 #include <mutex>
 
-enum class NodeContent { WALL, ENEMY, OBJECT, NOTHING, PLAYER, PORTAL, CHEST, INVALID};
+enum class NodeContent { WALL, ENEMY, NOTHING, PLAYER, PORTAL, CHEST, POTION, COIN, INVALID };
 
 class INodeContent : public ICodable {
 private:
@@ -17,5 +17,5 @@ public:
 	INodeContent(NodeContent content);
 	void SetContent(NodeContent content);
 	inline NodeContent GetContent() const { return nodeContent; }
-	void Draw();
+	void Draw(Vector2 offset);
 };

@@ -28,6 +28,8 @@ private:
 public:
 	NodeMap(Vector2 size, Vector2 offset);
 
+	void CreatePortals(int numMap);
+	Vector2 GetOffset();
 	Vector2 GetSize();
 	Json::Value Code() override;
 	void Decode(Json::Value json) override;
@@ -36,5 +38,7 @@ public:
 	void Draw();
 	void SafePickNode(Vector2 position, SafePick safePickAction);
 	void SafeMultiPickNode(std::list<Vector2> position, SafeMultiPick safeMultiPickAction);
+	NodeGrid GetNodeGrid(NodeMap* nodeMap) { return nodeMap->_grid; }
 	~NodeMap();
+
 };

@@ -1,18 +1,32 @@
 #include "SpawnerObjects.h"
 
-Object* SpawnerObjects::SpawnObject(NodeMap* currentMap)
-{
-	Object* object = new Object(ObjectType::COIN, new Node(Vector2(0, 0), new INodeContent(NodeContent::INVALID)));
+void SpawnerObjects::SpawnLoop(NodeMap* currentMap, int mapNumber, int cooldown) {
+	while (spawning) {
+		SpawnObject(currentMap, mapNumber);
+		std::this_thread::sleep_for(std::chrono::milliseconds(cooldown));
+	}
+}
+
+Object* SpawnerObjects::SpawnObject(NodeMap* currentMap, int numberMap) {
+	Object* object = new Object(new Node(Vector2(currentMap->GetOffset().x, currentMap->GetOffset().y), new INodeContent(NodeContent::INVALID)), numberMap);
 	bool isEmpty = false;
 	while (!isEmpty) {
-		Vector2 randomPosition{ rand() % (10 - 1 + 1 ) + 1,rand() % (10 - 1 + 1) + 1 };
-		currentMap->SafePickNode(randomPosition, [&isEmpty, object, randomPosition](Node* auxNode) {
+		Vector2 randomPosition;
+		randomPosition.x = (rand() % (currentMap->GetSize().x)) + currentMap->GetOffset().x;
+		randomPosition.y = (rand() % (currentMap->GetSize().y)) + currentMap->GetOffset().y;
+		currentMap->SafePickNode(randomPosition, [&isEmpty, &object, randomPosition, numberMap](Node* auxNode) {
 			if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
-				ObjectType random = static_cast<ObjectType> (rand() % 2);
-				Node* node = new Node(randomPosition, new INodeContent(NodeContent::OBJECT));
-				Object* object = new Object(random, node);
-				object->Draw();
-				object->SetNode(node);
+				int random = (rand() % 2);
+				NodeContent content;
+				if(random == 0)
+					content = NodeContent::POTION;
+				else
+					content = NodeContent::COIN;
+
+				Node* node = new Node(randomPosition, new INodeContent(content));
+				object = new Object(node, numberMap);
+				auxNode->SetContent(content);
+				auxNode->DrawContent(randomPosition);
 				isEmpty = true;
 			}
 			});

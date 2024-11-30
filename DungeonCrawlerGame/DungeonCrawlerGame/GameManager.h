@@ -6,16 +6,12 @@
 #include "Objects/Object.h"
 #include "Objects/Chest.h"
 #include "Timer/Timer.h"
+#include "Nodes/WorldMap.h"
 
 class GameManager {
 private:
-	Player* player;
-	std::vector<Enemy*> enemies;
-	std::vector<NodeMap*> maps;
-	NodeMap* currentMap;
+	WorldMap* worldMap;
 	int currentMapNumber = 4;
-	std::vector<Object*> objects;
-	std::vector<Chest*> chests;
 public:
 	GameManager();
 	Json::Value CodeEnemies();
@@ -23,8 +19,7 @@ public:
 	void Code();
 	void Decode();
 	void PrintNewMap();
-	void CheckPortals();
-	void Print();
+	void PrintStats();
 	void Start();
 	void Update();
 	void End();

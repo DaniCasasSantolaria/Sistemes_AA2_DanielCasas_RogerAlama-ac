@@ -1,17 +1,17 @@
 #pragma once
 #include "../Nodes/Node.h"
 
-enum class ObjectType {COIN, POTION};
 
 class Object {
 private:
-	ObjectType type;
+	int map;
 	Node* node;
 
 public:
-	Object(ObjectType type, Node* node) : type(type), node(node) {}
-	inline ObjectType GetType() { return type; }
+	Object(Node* node, int currentMap) : node(node), map(currentMap){}
+	inline void SetNodeContent(NodeContent content) { node->SetContent(content); }
 	inline Node* GetNode() { return node; }
+	inline int GetMap() { return map; }
 	void Draw();
 	void SetNode(Node* node);
 	inline ~Object() {
