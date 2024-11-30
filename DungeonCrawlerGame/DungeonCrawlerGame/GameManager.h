@@ -10,14 +10,7 @@
 
 class GameManager {
 private:
-	Player* player;
 	WorldMap* worldMap;
-
-	//NodeMap* currentMap;
-	//std::vector<NodeMap*> maps;
-	//std::vector<Object*> objects;
-	//std::vector<Enemy*> enemies;
-	//std::vector<Chest*> chests;
 	int currentMapNumber = 4;
 public:
 	GameManager();
@@ -26,7 +19,7 @@ public:
 	void Code();
 	void Decode();
 	void PrintNewMap();
-	void Print();
+	void PrintStats();
 	void Start();
 	void Update();
 	void End();

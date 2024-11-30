@@ -7,49 +7,9 @@
 #include "Objects/SpawnerObjects.h"
 #include <fstream>
 #include <iostream>
-//Clase mapamundi que tingui mapes, vector enemies i objects, funcio printmap (nodemap) que pasan-li el currentmap ho imprimeixi
-// Vector de mapas en clase world en comptes de game manager
+
+
 GameManager::GameManager() {
-   /* srand(time(NULL));
-    int positionX = rand() % (9 - 1 + 1) + 1;
-    int positionY = rand() % (9 - 1 + 1) + 1;
-    player = new Player();
-    for (int i = -10; i < 30; i += 10) {
-        for (int j = -10; j < 30; j += 10)
-            maps.push_back(new NodeMap(Vector2(11, 11), Vector2(j, i)));
-    }
-    currentMapNumber = 4;
-    currentMap = maps[currentMapNumber];
-    currentMap->SafePickNode(player->GetPosition(), [this](Node* auxNode){
-        auxNode->SetContent(NodeContent::PLAYER);
-    });
-    enemies.push_back(SpawnerEnemies::SpawnEnemy(currentMap));
-    enemies.push_back(SpawnerEnemies::SpawnEnemy(currentMap));
-
-    objects.push_back(SpawnerObjects::SpawnObject(currentMap));
-    objects.push_back(SpawnerObjects::SpawnObject(currentMap));
-
-    chests.push_back(SpawnerChests::SpawnChest(currentMap));
-    chests.push_back(SpawnerChests::SpawnChest(currentMap));
-
-    for(Enemy* e : enemies){
-        Vector2 pos = e->GetPosition();
-        currentMap->SafePickNode(pos, [this, pos](Node* auxNode) {
-            auxNode->SetContent(NodeContent::ENEMY);
-			});
-    }
-    for(Object* o : objects){
-        Vector2 pos = o->GetNode()->GetPosition();
-        currentMap->SafePickNode(pos, [this, o](Node* auxNode) {
-            auxNode->SetContent(o->GetNode()->GetContent()->GetContent());
-			});
-    }
-    for(Chest* c : chests){
-        Vector2 pos = c->GetNode()->GetPosition();
-        currentMap->SafePickNode(pos, [this, c](Node* auxNode) {
-            auxNode->SetContent(c->GetNode()->GetContent()->GetContent());
-			});
-    }*/
     worldMap = new WorldMap();
     worldMap->SetMap();
 }
@@ -103,12 +63,12 @@ void GameManager::Decode() {
         jsonReadFile >> readedJson;
 
         if (readedJson[0].isMember("player")) {
-            player->Decode(readedJson[0]["player"]);
+            worldMap->GetPlayer()->Decode(readedJson[0]["player"]);
         }
 
         if (readedJson[1].isMember("enemies")) {
             for (Json::Value value : readedJson[1]["enemies"]) {
-                Enemy* e = new Enemy(0, 0, Vector2(0,0), nullptr);
+                Enemy* e = new Enemy();
                 e->Decode(value["enemy"]);
                 worldMap->GetEnemies().push_back(e);
             }
@@ -135,55 +95,76 @@ void GameManager::Decode() {
 void GameManager::PrintNewMap() {
     system("cls");
     worldMap->GetCurrentMap()->Draw();
-    player->Draw();
-    for (Object* object : worldMap->GetObjects()) {
-        object->Draw();
+    worldMap->GetPlayer()->Draw();
+    for (Object* o : worldMap->GetObjects()) {
+        if (o->GetMap() == currentMapNumber) {
+            o->Draw();
+        }
     }
     for (Chest* c : worldMap->GetChests()) {
-        c->Draw();
+        if (c->GetMap() == currentMapNumber) {
+            c->Draw();
+        }
     }
     for (Enemy* e : worldMap->GetEnemies()) {
-        e->Draw();
+        if (e->GetMap() == currentMapNumber) {
+            e->Draw();
+        }
     }
-    Print();
+    PrintStats();
 }
 
-void GameManager::Print() {
-
+void GameManager::PrintStats() {
+    std::string weapon = "";
+    switch (worldMap->GetPlayer()->GetWeapon()->GetWeaponType()) {
+    case WeaponType::SWORD:
+        weapon = "espada";
+        break;
+    case WeaponType::SPEAR:
+        weapon = "lanza";
+        break;
+    default:
+        break;
+    }
     CC::Lock();
-    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x + 10, 0);
-    std::cout << "Monedas: " << player->GetCoins();
-    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x + 10, 1);
-    std::cout << "Vidas: " << player->GetLifes();
-    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x + 10, 2);
-    std::cout << "Pociones: " << player->GetAmountPotions();
-    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x + 10, 3);
-    /*std::cout << "Pociones: " << player->GetWeapon();*/ //Falta hacer un enum per poder fer el cout
+    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x * 4, 0);
+    std::cout << "Monedas: " << worldMap->GetPlayer()->GetCoins();
+    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x * 4, 1);
+    std::cout << "Vidas: " << worldMap->GetPlayer()->GetLifes();
+    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x * 4, 2);
+    std::cout << "Pociones: " << worldMap->GetPlayer()->GetAmountPotions();
+    CC::SetPosition(worldMap->GetCurrentMap()->GetSize().x * 4, 3);
+    std::cout << "Arma: " << weapon;
     CC::Unlock();
     CC::Lock();
     CC::SetPosition(0, worldMap->GetCurrentMap()->GetSize().y);
     CC::Unlock();
 }
+
 void GameManager::Start() {
-    player->ActivatePlayer(worldMap->GetCurrentMap(), &currentMapNumber, worldMap->GetMaps());
-    Print();
+    NodeMap* currentMap = worldMap->GetCurrentMap();
+    int* currentMapNumberPtr = &currentMapNumber;
+    std::vector<NodeMap*> maps = worldMap->GetMaps();
+    worldMap->GetPlayer()->ActivatePlayer(currentMap, currentMapNumberPtr, maps, worldMap->GetEnemies());
+    worldMap->spawnerEnemies.StartSpawning(worldMap->GetCurrentMap(), currentMapNumber, true, 8000);
+    worldMap->spawnerChests.StartSpawning(worldMap->GetCurrentMap(), currentMapNumber, 17000);
 }
 
 void GameManager::Update() {
     for (Enemy* e : worldMap->GetEnemies()) {
-        Timer::DelayExecute(1000, [this, e]() {
-            e->Move(worldMap->GetCurrentMap());
+        Timer::DelayExecute(5000, [this, e]() {
+            e->Move(worldMap->GetMaps()[e->GetMap()], worldMap->GetCurrentMapNumber());
         });
     }
-;
 }
 
 void GameManager::End() {
-    player->DesactivatePlayer();
+    worldMap->GetPlayer()->DesactivatePlayer();
+    worldMap->spawnerEnemies.StopSpawning();
+    worldMap->spawnerChests.StopSpawning();
 }
 
 GameManager::~GameManager() {
-    delete player;
     for (Enemy* e : worldMap->GetEnemies())
         delete e;
     for (NodeMap* map : worldMap->GetMaps())

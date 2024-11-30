@@ -3,9 +3,15 @@
 #include "Weapons/Sword.h"
 #include "../ConsoleControl/ConsoleControl.h"
 
+void Player::EnableMovementAfterDelay() {
+	classMutex.lock();
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	classMutex.unlock();
+	canMove = true;
+}
 
-Player::Player() {
-	position = new Node(Vector2(3, 3), new INodeContent(NodeContent::PLAYER));
+Player::Player(NodeMap* currentMap) {
+	position = new Node(Vector2(currentMap->GetOffset().x + 5, currentMap->GetOffset().y + 5), new INodeContent(NodeContent::PLAYER));
 	coinCounter = 0;
 	lifes = 100;
 	potionsCounter = 0;
@@ -85,34 +91,40 @@ void Player::Attack(EnemyDamageable* enemy) {
 	enemy->ReceiveDamage(equipedWeapon->Attack());
 }
 
-void Player::ActivatePlayer(NodeMap* currentMap, int* numMap, std::vector<NodeMap*>maps) {
-	InputSystem::KeyBinding* kb1 = IS.AddListener(K_UP, [this, currentMap, numMap, maps]() {
+void Player::Move(NodeMap* currentMap, int* numMap, std::vector<NodeMap*> maps, std::vector<Enemy*> enemies) {
+	if (canMove) {
+		canMove = false;
+		UpdatePosition(currentMap, numMap, maps, enemies);
+		std::thread(&Player::EnableMovementAfterDelay, this).detach();
+	}
+}
+
+void Player::ActivatePlayer(NodeMap* currentMap, int* numMap, std::vector<NodeMap*> maps, std::vector<Enemy*> enemies) {
+	InputSystem::KeyBinding* kb1 = IS.AddListener(K_UP, [this, currentMap, numMap, maps, enemies]() {
 		SetMovementState(PlayerState::UP);
-		UpdatePosition(currentMap, numMap, maps);
+		Move(currentMap, numMap, maps, enemies);
 		});
 
-	InputSystem::KeyBinding* kb2 = IS.AddListener(K_LEFT, [this, currentMap, numMap, maps]() {
+	InputSystem::KeyBinding* kb2 = IS.AddListener(K_LEFT, [this, currentMap, numMap, maps, enemies]() {
 		SetMovementState(PlayerState::LEFT);
-		UpdatePosition(currentMap, numMap, maps);
+		Move(currentMap, numMap, maps, enemies);
 		});
 
-	InputSystem::KeyBinding* kb3 = IS.AddListener(K_DOWN, [this, currentMap, numMap, maps]() {
+	InputSystem::KeyBinding* kb3 = IS.AddListener(K_DOWN, [this, currentMap, numMap, maps, enemies]() {
 		SetMovementState(PlayerState::DOWN);
-		UpdatePosition(currentMap, numMap, maps);
+		Move(currentMap, numMap, maps, enemies);
 		});
 
-	InputSystem::KeyBinding* kb4 = IS.AddListener(K_RIGHT, [this, currentMap, numMap, maps]() {
+	InputSystem::KeyBinding* kb4 = IS.AddListener(K_RIGHT, [this, currentMap, numMap, maps, enemies]() {
 		SetMovementState(PlayerState::RIGHT);
-		UpdatePosition(currentMap, numMap, maps);
+		Move(currentMap, numMap, maps, enemies);
 		});
-	InputSystem::KeyBinding* kb5 = IS.AddListener(K_1, [this, currentMap]() {
+	InputSystem::KeyBinding* kb5 = IS.AddListener(K_1, [this]() {
 		Heal(15);
-		});
-	InputSystem::KeyBinding* kb6 = IS.AddListener(K_SPACE, [this, currentMap]() {
-		/*SetMovementState(PlayerState::ATTACK);*/
 		});
 	IS.StartListen();
 }
+
 
 void Player::ReceiveMoreCoins(int amount) {
 	coinsMutex.lock();
@@ -149,7 +161,7 @@ Vector2 Player::GetPosition() {
 	return auxPos;
 }
 
-void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMap*> maps) {
+void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMap*> maps, std::vector<Enemy*> enemies) {
 	positionMutex.lock();
 	Vector2 previousPosition = position->GetPosition();
 	positionMutex.unlock();
@@ -172,8 +184,18 @@ void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMa
 	}
 	bool canMove = false;
 	NodeMap* nextMap = nullptr;
-	currentMap->SafePickNode(nextPosition, [this, nextPosition, &canMove, &numMap, maps, &nextMap ](Node* auxNode) {
-		if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
+	Enemy* damagedEnemy = nullptr;
+	currentMap->SafePickNode(nextPosition, [this, nextPosition, &canMove, &numMap, maps, enemies, &nextMap, &damagedEnemy](Node* auxNode) {
+		if (auxNode->GetContent()->GetContent() == NodeContent::ENEMY) {
+			for (Enemy* e : enemies) {
+				if (e->GetPosition().x == auxNode->GetPosition().x && e->GetPosition().y == auxNode->GetPosition().y) {
+					damagedEnemy = e;
+					Attack(damagedEnemy);
+					break;
+				}
+			}
+		}
+		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
 			canMove = true;
 			positionMutex.lock();
 			position->SetPosition(nextPosition);
@@ -201,7 +223,7 @@ void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMa
 			TakePotion();
 		}
 		else if (auxNode->GetINodeContent()->GetContent() == NodeContent::PORTAL) {
-			int num = CheckPortals(*numMap);
+			int num = CheckPortals();
 			*numMap += num;
 			nextMap = maps[*numMap];
 			canMove = true;
@@ -215,9 +237,17 @@ void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMa
 			}
 		});
 	}
+	if (damagedEnemy != nullptr) {
+		if (damagedEnemy->IsDead()) {
+			currentMap->SafePickNode(damagedEnemy->GetPosition(), [this, &damagedEnemy](Node* auxNode) {
+				auxNode->SetContent(NodeContent::NOTHING);
+				delete damagedEnemy;
+				});
+		}
+	}
 	if (nextMap != nullptr) {
 		currentMap = nextMap;
-		Vector2 newPosPlayer = Vector2(currentMap->GetSize().x / 2, currentMap->GetSize().y / 2);
+		Vector2 newPosPlayer = Vector2(currentMap->GetOffset().x + currentMap->GetSize().x / 2, currentMap->GetOffset().y + currentMap->GetSize().y / 2);
 		currentMap->SafePickNode(newPosPlayer, [this, newPosPlayer](Node* auxNode) {
 			auxNode->SetContent(NodeContent::PLAYER);
 			positionMutex.lock();
@@ -226,7 +256,30 @@ void Player::UpdatePosition(NodeMap* currentMap, int* numMap, std::vector<NodeMa
 			});
 		system("cls");
 		currentMap->Draw();
-		//FALTA QUE IMPRIMEIXI OBJECTES I ENEMICS. ES FA AMB EL PRINTNEWMAP()
+		std::string weapon = "";
+		switch (equipedWeapon->GetWeaponType()) {
+		case WeaponType::SWORD:
+			weapon = "espada";
+			break;
+		case WeaponType::SPEAR:
+			weapon = "lanza";
+			break;
+		default:
+			break;
+		}
+		CC::Lock();
+		CC::SetPosition(currentMap->GetSize().x * 4, 0);
+		std::cout << "Monedas: " << coinCounter;
+		CC::SetPosition(currentMap->GetSize().x * 4, 1);
+		std::cout << "Vidas: " << lifes;
+		CC::SetPosition(currentMap->GetSize().x * 4, 2);
+		std::cout << "Pociones: " << potionsCounter;
+		CC::SetPosition(currentMap->GetSize().x * 4, 3);
+		std::cout << "Arma: " << weapon;
+		CC::Unlock();
+		CC::Lock();
+		CC::SetPosition(0, currentMap->GetSize().y);
+		CC::Unlock();
 	}
 	
 	movementState = PlayerState::IDLE;
@@ -247,11 +300,11 @@ void Player::TakeCoin() {
 	int coins = coinCounter;
 	coinsMutex.unlock();
 	CC::Lock();
-	CC::SetPosition(11 + 10, 0);
+	CC::SetPosition(33 + 11, 0);
 	std::cout << "Monedas: " << coinCounter;
 	CC::Unlock();
 	CC::Lock();
-	CC::SetPosition(11, 11);
+	CC::SetPosition(33 + 11, 11);
 	CC::Unlock();
 }
 
@@ -260,12 +313,11 @@ void Player::TakePotion() {
 	potionsCounter++;
 	int potions = potionsCounter;
 	potionsMutex.unlock();
+
 	CC::Lock();
-	CC::SetPosition(11 + 10, 0);
+	CC::SetPosition(33 + 11, 2);
 	std::cout << "Pociones: " << potions;
-	CC::Unlock();
-	CC::Lock();
-	CC::SetPosition(11, 11);
+	CC::SetPosition(33 + 11, 11);
 	CC::Unlock();
 }
 
@@ -277,54 +329,63 @@ void Player::Heal(int lifeToHeal)
 
 	if (potions < 0)
 		return;
-
-	if (lifes < maxLife) {
+	lifeMutex.lock();
+	int life = lifes;
+	lifeMutex.unlock();
+	if (life < maxLife) {
 		lifeMutex.lock();
 		lifes += lifeToHeal;
+		life = lifes;
 		if (lifes > maxLife) {
 			lifes = maxLife;
+			life = lifes;
+			lifeMutex.unlock();
 		}
-		lifeMutex.unlock();
+		else {
+			lifeMutex.unlock();
+		}
 		potionsMutex.lock();
 		potionsCounter--;
+		potions = potionsCounter;
 		potionsMutex.unlock();
 	}
+	CC::Lock();
+	CC::SetPosition(33 + 11, 2);
+	std::cout << "Pociones: " << potions;
+	CC::SetPosition(33 + 11, 1);
+	std::cout << "Vidas: " << life;
+	CC::SetPosition(33 + 11, 11);
+	CC::Unlock();
 }
 
-int Player::CheckPortals(int currentMap) {
+int Player::CheckPortals() {
 	positionMutex.lock();
 	Vector2 pos = position->GetPosition();
 	positionMutex.unlock();
 	int nextMap = 0;
 	switch (movementState) {
 	case Player::PlayerState::DOWN:
-		if (currentMap < 6) {
-			nextMap = 3;
-			pos.y++;
-		}
+		nextMap = 3;
+		pos.y++;
 		break;
 	case Player::PlayerState::LEFT:
-		if (currentMap != 0 && currentMap != 3 && currentMap != 6) {
-			nextMap = -1;
-			pos.x--;
-		}
+		nextMap = -1;
+		pos.x--;
 		break;
 	case Player::PlayerState::RIGHT:
-		if (currentMap != 2 && currentMap != 5 && currentMap != 8) {
-			nextMap = 1;
-			pos.x++;
-		}
+		nextMap = 1;
+		pos.x++;
 		break;
 	case Player::PlayerState::UP:
-		if (currentMap > 2) {
-			nextMap = -3;
-			pos.y--;
-		}
+		nextMap = -3;
+		pos.y--;
 		break;
 	}
 	return nextMap;
 }
 
 void Player::Draw() {
+	position->Lock();
 	position->GetContent()->Draw(position->GetPosition());
+	position->Unlock();
 }

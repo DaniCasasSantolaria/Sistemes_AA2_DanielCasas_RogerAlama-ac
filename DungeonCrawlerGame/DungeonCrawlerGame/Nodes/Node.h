@@ -6,6 +6,7 @@
 class Node : public ICodable {
 private:
 	Vector2 _position;
+	std::mutex positionMutex;
 	INodeContent* _content = nullptr;
 	std::mutex _classMutex;
 public:
@@ -24,7 +25,14 @@ public:
 	void DrawContent(Vector2 offset);
 
 	inline void SetPosition(Vector2 position) { _position = position; }
-	inline Vector2 GetPosition() { return _position; }
+	inline Vector2 GetPosition() { 
+		positionMutex.lock();
+		Vector2 position;
+		position.x = _position.x;
+		position.y = _position.y;
+		positionMutex.unlock();
+		return position; 
+	}
 	inline INodeContent* GetINodeContent() { return _content; }
 	bool IsEmpty();
 

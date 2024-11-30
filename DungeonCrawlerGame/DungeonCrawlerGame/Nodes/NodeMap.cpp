@@ -3,8 +3,10 @@
 #include "../ConsoleControl/ConsoleControl.h"
 
 Node* NodeMap::GetNode(Vector2 position) {
+	position.x -= _offset.x;
+	position.y -= _offset.y;
 	_sizeMutex.lock();
-	if (position.x >= _size.x || position.y >= _size.y) {
+	if (position.x > _size.x || position.y > _size.y) {
 		_sizeMutex.unlock();
 		return nullptr;
 	}
@@ -20,14 +22,11 @@ NodeMap::NodeMap(Vector2 size, Vector2 offset) {
 	_size = size;
 	_offset = offset;
 
-	for (int x = 0; x < size.x; x++) {
+	for (int x = _offset.x; x < _offset.x + size.x; x++) {
 		NodeColumn* column = new NodeColumn();
 
-		for (int y = 0; y < size.y; y++) {
-			if (x == 0 || y == 0 || x == size.x - 1 || y == size.y - 1) {
-				if (x == size.x / 2 || y == size.y / 2)
-					column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::PORTAL)));
-				else
+		for (int y = _offset.y; y < _offset.y + size.y; y++) {
+			if (x == _offset.x || y == _offset.y || x == _offset.x + size.x - 1 || y == _offset.y + size.y - 1) {
 				column->push_back(new Node(Vector2(x, y), new INodeContent(NodeContent::WALL)));
 			}
 			else
@@ -35,6 +34,84 @@ NodeMap::NodeMap(Vector2 size, Vector2 offset) {
 		}
 		_grid.push_back(column);
 	}
+}
+
+
+
+void NodeMap::CreatePortals(int numMap) {
+	_sizeMutex.lock();
+	Vector2 size = _size;
+	_sizeMutex.unlock();
+	if (numMap < 3) {
+		SafePickNode(Vector2(_offset.x + size.x / 2, _offset.y + size.y - 1), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		SafePickNode(Vector2(_offset.x + size.x - 1, _offset.y + size.y / 2), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		SafePickNode(Vector2(_offset.x, _offset.y + size.y / 2), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		if (numMap == 0) {
+			SafePickNode(Vector2(_offset.x, _offset.y + size.y / 2), [this](Node* auxNode) {
+				auxNode->SetContent(NodeContent::WALL);
+				});
+		}
+		else if (numMap == 3) {
+			SafePickNode(Vector2(_offset.x + size.x - 1, _offset.y + size.y / 2), [this](Node* auxNode) {
+				auxNode->SetContent(NodeContent::WALL);
+				});
+		}
+	}
+	else if (numMap > 2 && numMap < 6) {
+		SafePickNode(Vector2(_offset.x + size.x / 2, _offset.y + size.y - 1), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		SafePickNode(Vector2(_offset.x + size.x / 2, _offset.y), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		SafePickNode(Vector2(_offset.x + size.x - 1, _offset.y + size.y / 2), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		SafePickNode(Vector2(_offset.x, _offset.y + size.y / 2), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		if (numMap == 3) {
+			SafePickNode(Vector2(_offset.x, _offset.y + size.y / 2), [this](Node* auxNode) {
+				auxNode->SetContent(NodeContent::WALL);
+				});
+		}
+		else if (numMap == 5) {
+			SafePickNode(Vector2(_offset.x + size.x - 1, _offset.y + size.y / 2), [this](Node* auxNode) {
+				auxNode->SetContent(NodeContent::WALL);
+				});
+		}
+	}
+	else if (numMap > 5) {
+		SafePickNode(Vector2(_offset.x + size.x / 2, _offset.y), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		SafePickNode(Vector2(_offset.x + size.x - 1, _offset.y + size.y / 2), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		SafePickNode(Vector2(_offset.x, _offset.y + size.y / 2), [this](Node* auxNode) {
+			auxNode->SetContent(NodeContent::PORTAL);
+			});
+		if (numMap == 6) {
+			SafePickNode(Vector2(_offset.x, _offset.y + size.y / 2), [this](Node* auxNode) {
+				auxNode->SetContent(NodeContent::WALL);
+				});
+		}
+		else if (numMap == 8) {
+			SafePickNode(Vector2(_offset.x + size.x - 1, _offset.y + size.y / 2), [this](Node* auxNode) {
+				auxNode->SetContent(NodeContent::WALL);
+				});
+		}
+	}
+}
+
+Vector2 NodeMap::GetOffset() {
+	return _offset;
 }
 
 Vector2 NodeMap::GetSize() {
@@ -53,7 +130,7 @@ INodeContent* NodeMap::GetNodeContent(Vector2 position) {
 }
 
 Json::Value NodeMap::Code() {
-	Json::Value json; // Objeto principal
+	Json::Value json;
 	json["offsetX"] = _offset.x;
 	json["offsetY"] = _offset.y;
 
@@ -134,7 +211,7 @@ void NodeMap::Draw() {
 	for (NodeColumn* column : _grid) {
 		for (Node* node : *column) {
 			node->Lock();
-			node->DrawContent(node->GetPosition());
+			node->DrawContent(Vector2(node->GetPosition().x, node->GetPosition().y));
 			node->Unlock();
 		}
 		std::cout << std::endl;

@@ -28,6 +28,8 @@ private:
 public:
 	NodeMap(Vector2 size, Vector2 offset);
 
+	void CreatePortals(int numMap);
+	Vector2 GetOffset();
 	Vector2 GetSize();
 	Json::Value Code() override;
 	void Decode(Json::Value json) override;

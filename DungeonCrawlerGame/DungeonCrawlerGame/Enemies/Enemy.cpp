@@ -23,36 +23,40 @@ void Enemy::Decode(Json::Value json) {
 	isDead = json["isDead"].asBool();
 }
 
-void Enemy::Move(NodeMap* currentMap) {
+void Enemy::Move(NodeMap* currentMap, int currentMapNumber) {
 	bool canMove = false;
 	positionMutex.lock();
 	Vector2 lastPos = node->GetPosition();
 	positionMutex.unlock();
-	while (!canMove) {
-		int randomX = rand() % ((1 - (-1) + 1) + (-1));
-		int randomY = rand() % ((1 - (-1) + 1) + (-1));
+	int maxAttempts = 20;
+	while (!canMove && maxAttempts > 0) {
+		int randomX = (rand() % 3) - 1;
+		int randomY = (rand() % 3) - 1;
 
 		Vector2 pos{ randomX, randomY };
-		Vector2 nextPos = lastPos + pos;
+		Vector2 nextPos = Vector2(lastPos.x + pos.x, lastPos.y + pos.y);
 	
-		currentMap->SafePickNode(nextPos, [this, nextPos, &canMove](Node* auxNode) {
+		currentMap->SafePickNode(nextPos, [this, nextPos, &canMove, currentMapNumber](Node* auxNode) {
 			if (auxNode->GetINodeContent()->GetContent() == NodeContent::NOTHING) {
 				positionMutex.lock();
 				node->SetPosition(nextPos);
 				positionMutex.unlock();
 				auxNode->SetContent(NodeContent::ENEMY);
-				auxNode->DrawContent(nextPos);
+				if(currentMapNumber == map)
+					auxNode->DrawContent(nextPos);
 				canMove = true;
 			}
 		});
 		if (canMove) {
-			currentMap->SafePickNode(lastPos, [this, lastPos](Node* auxNode) {
+			currentMap->SafePickNode(lastPos, [this, lastPos, currentMapNumber](Node* auxNode) {
 				if (auxNode->GetINodeContent()->GetContent() == NodeContent::ENEMY) {
 					auxNode->SetContent(NodeContent::NOTHING);
-					auxNode->DrawContent(lastPos);
+					if (currentMapNumber == map)
+						auxNode->DrawContent(lastPos);
 				}
 			});
 		}
+		maxAttempts--;
 	;}
 	CC::Lock();
 	CC::SetPosition(0, currentMap->GetSize().y);

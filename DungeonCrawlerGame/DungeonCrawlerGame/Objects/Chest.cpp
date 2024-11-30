@@ -12,6 +12,6 @@ void Chest::Draw() {
 	node->DrawContent(node->GetPosition());
 }
 
-void Chest::SetNode(Node* node) {
+void Chest::SetNode(Node* node) {;
 	this->node = node;
 }
